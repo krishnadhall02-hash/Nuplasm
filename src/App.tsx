@@ -29,7 +29,7 @@ export default function App() {
   const [selectedTime, setSelectedTime] = useState('');
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'Appointment Confirmed', message: 'Your session with Dr. Sarah is set for tomorrow at 10:00 AM.', time: '2m ago', read: false, type: 'calendar' },
-    { id: 2, title: 'AI Analysis Ready', message: 'SurgiBot has finished analyzing your last MRI scan.', time: '1h ago', read: false, type: 'brain' },
+    { id: 2, title: 'AI Analysis Ready', message: 'Nuplasm AI has finished analyzing your last MRI scan.', time: '1h ago', read: false, type: 'brain' },
     { id: 3, title: 'Exercise Reminder', message: 'Time for your daily knee mobility exercises.', time: '4h ago', read: true, type: 'activity' },
     { id: 4, title: 'Message from Care Team', message: 'We have updated your post-op recovery protocol.', time: 'Yesterday', read: true, type: 'message' },
   ]);
@@ -49,7 +49,7 @@ export default function App() {
     { id: '3', title: 'Neural Assessment', type: 'Neurology', status: 'Pending', date: 'Apr 25, 2024', doctor: 'Awaiting Match', description: 'Chronic migraine investigation and neuro-surgical evaluation of persistent ocular pressure.' },
   ];
   const [chatHistory, setChatHistory] = useState([
-    { id: 1, role: 'ai', text: "Hello Krishna! I'm SurgiBot, your personal care assistant. How can I help you with your recovery today?", time: '09:41' }
+    { id: 1, role: 'ai', text: "Hello Krishna! I'm Nuplasm AI, your personal care assistant. How can I help you with your recovery today?", time: '09:41' }
   ]);
   const [caseStep, setCaseStep] = useState(1);
   const [caseForm, setCaseForm] = useState({
@@ -238,7 +238,7 @@ export default function App() {
               transition={{ delay: 0.5 }}
               className="text-3xl font-semibold tracking-tight text-slate-900 mb-2"
             >
-              SurgiCare
+              Nuplasm Health Care
             </motion.h1>
 
             <motion.p
@@ -247,7 +247,7 @@ export default function App() {
               transition={{ delay: 0.7 }}
               className="text-sm uppercase tracking-[0.2em] font-medium text-slate-500"
             >
-              Smart Surgical Care
+              Advanced Healthcare Solutions
             </motion.p>
 
             <div className="mt-16 w-48 h-1 bg-slate-100 rounded-full overflow-hidden relative">
@@ -1167,7 +1167,7 @@ export default function App() {
             className="flex-1 flex flex-col bg-surface-bg h-screen"
           >
             <Header 
-              title="Assistant AI" 
+              title="Nuplasm AI" 
               onBack={() => setView('dashboard')}
               rightElement={
                 <div className="flex items-center gap-2 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">
@@ -2044,7 +2044,7 @@ export default function App() {
                   </div>
 
                   <div className="text-center pt-8">
-                     <p className="text-[10px] text-slate-200 font-black uppercase tracking-[0.4em]">SurgiBot v2.4.0</p>
+                     <p className="text-[10px] text-slate-200 font-black uppercase tracking-[0.4em]">Nuplasm AI v2.4.0</p>
                   </div>
                 </div>
               )}
