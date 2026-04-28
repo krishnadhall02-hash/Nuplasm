@@ -4,10 +4,11 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2 } from 'lucide-react';
+import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2, Download, Share2, Settings, LogOut, Heart, Info, CreditCard, Star, Camera, Check, File } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, KeyboardEvent } from 'react';
+import { Button, Card, Header, Container, Badge, SectionTitle, FloatingBanner } from './components/design-system';
 
-type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport';
+type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport' | 'booking' | 'payment' | 'receipt' | 'notifications' | 'doctorDashboard';
 
 export default function App() {
   const [view, setView] = useState<AppView>('splash');
@@ -24,6 +25,23 @@ export default function App() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<{name: string, size: string, type: 'pdf' | 'img'}[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date().getDate());
+  const [selectedTime, setSelectedTime] = useState('');
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'Appointment Confirmed', message: 'Your session with Dr. Sarah is set for tomorrow at 10:00 AM.', time: '2m ago', read: false, type: 'calendar' },
+    { id: 2, title: 'AI Analysis Ready', message: 'SurgiBot has finished analyzing your last MRI scan.', time: '1h ago', read: false, type: 'brain' },
+    { id: 3, title: 'Exercise Reminder', message: 'Time for your daily knee mobility exercises.', time: '4h ago', read: true, type: 'activity' },
+    { id: 4, title: 'Message from Care Team', message: 'We have updated your post-op recovery protocol.', time: 'Yesterday', read: true, type: 'message' },
+  ]);
+  const [doctorTab, setDoctorTab] = useState<'pre-op' | 'active' | 'post-op'>('active');
+
+  const mockPatients = [
+    { id: 'p1', name: 'James Wilson', procedure: 'ACL Reconstruction', status: 'pre-op', risk: 'Low', date: 'May 14', recovery: 0, avatar: 'JW' },
+    { id: 'p2', name: 'Sarah Chen', procedure: 'Hip Replacement', status: 'active', risk: 'Medium', date: 'In Surgery', recovery: 15, avatar: 'SC' },
+    { id: 'p3', name: 'Michael Ross', procedure: 'Spinal Fusion', status: 'active', risk: 'High', date: 'Post-Op Day 1', recovery: 22, avatar: 'MR' },
+    { id: 'p4', name: 'Emma Thompson', procedure: 'Knee Arthroscopy', status: 'post-op', risk: 'Low', date: 'Week 4', recovery: 78, avatar: 'ET' },
+    { id: 'p5', name: 'David Miller', procedure: 'Shoulder Labrum', status: 'post-op', risk: 'Medium', date: 'Week 2', recovery: 45, avatar: 'DM' },
+  ];
 
   const mockCases = [
     { id: '1', title: 'ACL Reconstruction', type: 'Orthopedic', status: 'In Progress', date: 'Mar 12, 2024', doctor: 'Dr. Sarah Mitchell', description: 'Complete tear of the anterior cruciate ligament in the left knee requiring surgical reconstruction using hamstring graft.' },
@@ -253,21 +271,21 @@ export default function App() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col bg-white"
+            className="flex-1 flex flex-col bg-white overflow-hidden"
           >
             {/* Top Navigation */}
-            <div className="flex justify-between items-center p-6 sm:p-8">
-              <div className="flex gap-1.5">
+            <div className="flex justify-between items-center p-8">
+              <div className="flex gap-2">
                 {onboardingData.map((_, i) => (
                   <div 
                     key={i} 
-                    className={`h-1 transition-all duration-300 rounded-full ${i === activeSlide ? 'w-8 bg-blue-600' : 'w-2 bg-slate-200'}`} 
+                    className={`h-1.5 transition-all duration-300 rounded-full ${i === activeSlide ? 'w-10 bg-primary' : 'w-2 bg-slate-100'}`} 
                   />
                 ))}
               </div>
               <button 
                 onClick={() => setView('login')}
-                className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors"
+                className="text-xs font-black uppercase tracking-widest text-content-muted hover:text-content-primary transition-colors"
                 id="skip-button"
               >
                 Skip
@@ -282,31 +300,29 @@ export default function App() {
                   initial={{ opacity: 0, x: 100 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -100 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-0 flex flex-col px-8 pb-12"
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute inset-0 flex flex-col px-8"
                 >
-                  <div className="flex-1 flex items-center justify-center">
+                  <div className="flex-[1.5] flex items-center justify-center">
                     <motion.div
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      className={`w-64 h-64 sm:w-80 sm:h-80 rounded-full ${onboardingData[activeSlide].color} flex items-center justify-center relative shadow-inner`}
+                      className={`w-72 h-72 rounded-5xl ${onboardingData[activeSlide].color} flex items-center justify-center relative shadow-inner`}
                     >
-                      <div className="absolute inset-0 rounded-full border border-current pointer-events-none opacity-10 animate-[spin_20s_linear_infinite]" />
-                      <div className="absolute inset-4 rounded-full border border-dashed border-current pointer-events-none opacity-20 animate-[spin_30s_linear_infinite_reverse]" />
-                      
-                      <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-xl transform rotate-3">
+                      <div className="absolute inset-0 rounded-5xl border border-current pointer-events-none opacity-5 animate-[spin_40s_linear_infinite]" />
+                      <div className="bg-white p-10 rounded-4xl shadow-strong transform rotate-3">
                         {onboardingData[activeSlide].icon}
                       </div>
                     </motion.div>
                   </div>
 
-                  <div className="max-w-md mx-auto text-center mt-8">
+                  <div className="flex-1 max-w-sm mx-auto text-center">
                     <motion.h2 
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.3 }}
-                      className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight mb-4"
+                      className="text-4xl font-black text-content-primary leading-[1.1] mb-6 tracking-tight"
                     >
                       {onboardingData[activeSlide].title}
                     </motion.h2>
@@ -314,7 +330,7 @@ export default function App() {
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.4 }}
-                      className="text-slate-500 leading-relaxed text-lg"
+                      className="text-content-secondary leading-relaxed text-lg font-medium"
                     >
                       {onboardingData[activeSlide].description}
                     </motion.p>
@@ -323,19 +339,11 @@ export default function App() {
               </AnimatePresence>
             </div>
 
-            {/* Bottom CTA */}
-            <div className="p-8 pb-12 flex justify-center">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={nextSlide}
-                id="next-button"
-                className="w-full max-w-md bg-slate-900 text-white rounded-2xl p-5 font-semibold flex items-center justify-center gap-3 shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all group"
-              >
-                <span>{activeSlide === onboardingData.length - 1 ? "Get Started" : "Continue"}</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            </div>
+            <FloatingBanner>
+              <Button onClick={nextSlide} icon={ChevronRight}>
+                {activeSlide === onboardingData.length - 1 ? "Get Started" : "Continue"}
+              </Button>
+            </FloatingBanner>
           </motion.div>
         )}
 
@@ -345,27 +353,27 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex-1 flex flex-col p-8 bg-white"
+            className="flex-1 flex flex-col bg-white overflow-hidden"
           >
-            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
+            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full p-8 px-10">
               <div className="mb-12">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
-                  <Stethoscope className="w-8 h-8 text-blue-600" />
+                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mb-10 shadow-soft">
+                  <Stethoscope className="w-10 h-10 text-primary" />
                 </div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h2>
-                <p className="text-slate-500">Enter your phone number to continue with SurgiCare.</p>
+                <h2 className="text-4xl font-black text-content-primary mb-4 tracking-tight">Welcome</h2>
+                <p className="text-content-secondary font-medium text-lg leading-relaxed">Enter your phone number to continue your recovery journey.</p>
               </div>
 
               <div className="space-y-6">
-                <div className="relative group">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Phone Number</label>
-                  <div className="flex items-center bg-slate-50 border-2 border-slate-100 group-focus-within:border-blue-500 group-focus-within:bg-white rounded-2xl p-4 transition-all duration-200 shadow-sm">
-                    <Phone className="w-5 h-5 text-slate-400 mr-3" />
-                    <span className="text-slate-900 font-medium mr-2">+1</span>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-content-muted uppercase tracking-[0.2em] ml-2">Phone Number</label>
+                  <div className="flex items-center bg-slate-50 border border-slate-100 focus-within:border-primary focus-within:bg-white rounded-2xl p-5 transition-all duration-300">
+                    <Phone className="w-6 h-6 text-content-muted mr-4" />
+                    <span className="text-content-primary font-black mr-2 text-xl">+1</span>
                     <input 
                       type="tel" 
-                      placeholder="Enter mobile number" 
-                      className="bg-transparent border-none outline-none text-lg font-medium w-full text-slate-900 placeholder:text-slate-300"
+                      placeholder="000-000-0000" 
+                      className="bg-transparent border-none outline-none text-xl font-black w-full text-content-primary placeholder:text-slate-200"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       id="phone-input"
@@ -373,40 +381,25 @@ export default function App() {
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => setView('otp')}
-                  disabled={!phoneNumber}
-                  className="w-full bg-slate-900 text-white rounded-2xl p-5 font-semibold flex items-center justify-center gap-3 shadow-lg shadow-slate-100 hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
-                  id="whatsapp-otp-button"
+                <Button 
+                  onClick={() => setView('otp')} 
+                  disabled={!phoneNumber} 
+                  icon={ChevronRight}
                 >
                   <MessageSquare className="w-5 h-5" />
-                  <span>Send OTP via WhatsApp</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
+                  <span>Get Verification Code</span>
+                </Button>
 
-                <div className="relative py-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-100"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-4 text-slate-400 font-medium tracking-widest">Or login with</span>
-                  </div>
-                </div>
+                <SectionTitle title="Quick Options" />
 
-                <button 
-                  className="w-full border-2 border-slate-100 text-slate-600 rounded-2xl p-5 font-semibold flex items-center justify-center gap-3 hover:bg-slate-50 transition-all active:scale-95"
-                  id="email-login-button"
-                >
-                  <Mail className="w-5 h-5" />
-                  <span>Continue with Email</span>
-                </button>
+                <Button variant="ghost" icon={Mail}>
+                  Continue with Email
+                </Button>
               </div>
             </div>
 
-            <p className="text-center text-slate-400 text-sm mt-8">
-              By continuing, you agree to our <span className="text-blue-600 font-medium">Terms</span> & <span className="text-blue-600 font-medium">Privacy Policy</span>
+            <p className="text-center text-content-muted text-[10px] font-bold uppercase tracking-widest pb-12">
+              Privacy First • SECURE ENCRYPTION • HIPPA compliant
             </p>
           </motion.div>
         )}
@@ -417,25 +410,22 @@ export default function App() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col p-8 bg-white"
+            className="flex-1 flex flex-col bg-white overflow-hidden"
           >
-            <button 
-               onClick={() => setView('login')}
-               className="p-3 w-fit hover:bg-slate-50 rounded-xl transition-colors mb-6"
-            >
-              <ArrowRight className="w-6 h-6 rotate-180 text-slate-600" />
-            </button>
+            <Header title="Verification" onBack={() => setView('login')} />
 
-            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full text-center">
-              <div className="mb-10">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <ShieldCheck className="w-8 h-8 text-blue-600" />
+            <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full p-8 text-center px-10">
+              <div className="mb-12">
+                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mx-auto mb-10 shadow-soft">
+                  <ShieldCheck className="w-10 h-10 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">Verify Account</h2>
-                <p className="text-slate-500">We've sent a 6-digit code to <span className="font-semibold text-slate-900">+1 {phoneNumber}</span> via WhatsApp.</p>
+                <h2 className="text-3xl font-black text-content-primary mb-4 tracking-tight">Security Code</h2>
+                <p className="text-content-secondary font-medium leading-relaxed">
+                  Enter the 6-digit code sent to <span className="text-content-primary font-black">+1 {phoneNumber}</span>
+                </p>
               </div>
 
-              <div className="flex justify-between gap-2 max-w-sm mx-auto mb-10">
+              <div className="flex justify-between gap-2 max-w-sm mx-auto mb-12">
                 {otp.map((digit, i) => (
                   <input
                     key={i}
@@ -446,39 +436,541 @@ export default function App() {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-11 h-14 sm:w-12 sm:h-16 text-center text-2xl font-bold rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition-all"
+                    className="w-12 h-16 text-center text-2xl font-black rounded-2xl border border-slate-100 bg-slate-50 focus:border-primary focus:bg-white focus:shadow-lg focus:shadow-blue-50 outline-none transition-all"
                   />
                 ))}
               </div>
 
-              <div className="space-y-6">
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setView('dashboard')}
+              <div className="space-y-8">
+                <Button 
+                  onClick={() => setView('dashboard')} 
                   disabled={otp.some(d => !d)}
-                  className="w-full bg-slate-900 text-white rounded-2xl p-5 font-semibold shadow-lg shadow-slate-100 hover:bg-slate-800 transition-all disabled:opacity-50"
-                  id="verify-otp-button"
+                  variant="primary"
                 >
                   Verify Now
-                </motion.button>
+                </Button>
 
                 <div className="flex flex-col items-center gap-4">
                   {timer > 0 ? (
-                    <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
+                    <div className="flex items-center gap-2 text-content-muted text-xs font-black uppercase tracking-widest">
                       <Clock className="w-4 h-4" />
-                      <span>Resend code in {timer}s</span>
+                      <span>Resend in {timer}s</span>
                     </div>
                   ) : (
                     <button 
                       onClick={() => setTimer(30)}
-                      className="text-blue-600 font-semibold text-sm hover:underline"
+                      className="text-primary font-black text-xs uppercase tracking-[0.2em] hover:underline"
                       id="resend-otp-button"
                     >
-                      Resend OTP code
+                      Resend code
                     </button>
                   )}
                 </div>
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {view === 'doctorDashboard' && (
+          <motion.div
+            key="doctorDashboard"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar"
+          >
+            {/* Doctor Header */}
+            <div className="p-8 pb-6 bg-white sticky top-0 z-30 border-b border-slate-100 shadow-soft">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 bg-primary rounded-4xl flex items-center justify-center text-white shadow-primary">
+                    <Stethoscope className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h2>
+                    <p className="text-[10px] text-content-muted font-black uppercase tracking-[0.2em] mt-1">Surgical Lead • Orthopedics</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setView('dashboard')}
+                  className="p-4 bg-slate-50 text-content-muted rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all border border-slate-100"
+                >
+                  <LogOut className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {[
+                  { label: 'Active', value: '12', variant: 'blue' },
+                  { label: 'Urgent', value: '3', variant: 'red' },
+                  { label: 'Cleared', value: '8', variant: 'emerald' }
+                ].map((stat, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <p className="text-3xl font-black text-slate-900 mb-1">{stat.value}</p>
+                    <Badge variant={stat.variant as any}>{stat.label}</Badge>
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation Tabs */}
+              <div className="flex gap-2 p-1.5 bg-slate-50 rounded-3xl border border-slate-100">
+                {(['pre-op', 'active', 'post-op'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setDoctorTab(tab)}
+                    className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                      doctorTab === tab 
+                      ? 'bg-white text-primary shadow-soft' 
+                      : 'text-content-muted hover:text-content-secondary'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Container className="pb-32">
+              <SectionTitle title={`${doctorTab} Patients`} />
+
+              <div className="space-y-4">
+                {mockPatients.filter(p => p.status === doctorTab).map((patient) => (
+                  <Card
+                    key={patient.id}
+                    onClick={() => {}}
+                    className="p-8"
+                  >
+                    <div className="flex items-start justify-between mb-8">
+                      <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-slate-50 rounded-3xl flex items-center justify-center font-black text-primary border border-blue-50">
+                          {patient.avatar}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-black text-slate-900">{patient.name}</h4>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">{patient.procedure}</p>
+                        </div>
+                      </div>
+                      <Badge variant={patient.risk === 'High' ? 'red' : patient.risk === 'Medium' ? 'amber' : 'emerald'}>
+                        {patient.risk} Risk
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-end">
+                          <p className="text-[10px] font-black text-content-muted uppercase tracking-widest">Recovery Progress</p>
+                          <p className="text-sm font-black text-primary">{patient.recovery}%</p>
+                        </div>
+                        <div className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${patient.recovery}%` }}
+                            className={`h-full rounded-full ${
+                              patient.recovery > 70 ? 'bg-emerald-500' :
+                              patient.recovery > 30 ? 'bg-primary' :
+                              'bg-amber-500'
+                            } shadow-[0_0_10px_rgba(37,99,235,0.2)]`}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-4 border-t border-slate-50">
+                         <div className="flex items-center gap-3">
+                            <Calendar className="w-4 h-4 text-content-muted" />
+                            <span className="text-xs font-black text-content-secondary uppercase tracking-widest">{patient.date}</span>
+                         </div>
+                         <Button variant="ghost" className="w-auto py-3 px-6 text-[10px] uppercase tracking-widest">
+                           Open Case
+                         </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {mockPatients.filter(p => p.status === doctorTab).length === 0 && (
+                <div className="py-24 text-center flex flex-col items-center gap-6">
+                   <div className="w-24 h-24 bg-white rounded-5xl shadow-soft flex items-center justify-center text-slate-200">
+                      <Search className="w-10 h-10" />
+                   </div>
+                   <p className="text-xs font-black text-content-muted uppercase tracking-[0.2em]">No patients in this stage</p>
+                </div>
+              )}
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'notifications' && (
+          <motion.div
+            key="notifications"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar"
+          >
+            <Header 
+              title="Notifications" 
+              onBack={() => setView('dashboard')}
+              rightElement={
+                <button 
+                  onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+                  className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 px-4 py-2 rounded-full transition-all"
+                >
+                  Mark All
+                </button>
+              }
+            />
+
+            <Container className="pb-32">
+              <AnimatePresence mode="popLayout">
+                {notifications.map((notif) => (
+                  <motion.div
+                    key={notif.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    onClick={() => {
+                      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+                    }}
+                    className={`p-6 rounded-4xl border transition-all cursor-pointer relative group mb-3 last:mb-0 ${
+                      notif.read 
+                      ? 'bg-white/50 border-slate-100 opacity-60' 
+                      : 'bg-white border-blue-100 shadow-strong ring-1 ring-blue-50/50'
+                    }`}
+                  >
+                    {!notif.read && (
+                      <div className="absolute top-8 right-8 w-3 h-3 bg-primary rounded-full shadow-primary" />
+                    )}
+                    
+                    <div className="flex gap-6">
+                      <div className={`w-14 h-14 rounded-3xl flex items-center justify-center flex-shrink-0 ${
+                        notif.type === 'calendar' ? 'bg-amber-50 text-amber-600' :
+                        notif.type === 'brain' ? 'bg-blue-50 text-blue-600' :
+                        notif.type === 'activity' ? 'bg-emerald-50 text-emerald-600' :
+                        'bg-purple-50 text-purple-600'
+                      }`}>
+                         {notif.type === 'calendar' && <Calendar className="w-7 h-7" />}
+                         {notif.type === 'brain' && <Brain className="w-7 h-7" />}
+                         {notif.type === 'activity' && <Clock className="w-7 h-7" />}
+                         {notif.type === 'message' && <MessageSquare className="w-7 h-7" />}
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className={`text-base font-black tracking-tight ${notif.read ? 'text-content-secondary' : 'text-slate-900'}`}>{notif.title}</h4>
+                        </div>
+                        <p className={`text-sm leading-relaxed mb-4 ${notif.read ? 'text-content-muted' : 'text-content-secondary font-medium'}`}>
+                          {notif.message}
+                        </p>
+                        <Badge variant="slate">{notif.time}</Badge>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'receipt' && (
+          <motion.div
+            key="receipt"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex-1 flex flex-col items-center justify-center bg-surface-bg p-8 h-screen"
+          >
+            <Card className="w-full max-w-sm overflow-hidden p-0 flex flex-col">
+              {/* Receipt Visuals */}
+              <div className="bg-slate-900 p-10 text-center relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                <div className="w-24 h-24 bg-primary rounded-4xl flex items-center justify-center mx-auto mb-6 border-4 border-slate-800 shadow-primary">
+                  <Check className="w-10 h-10 text-white" strokeWidth={4} />
+                </div>
+                <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Payment Approved</h2>
+                <Badge variant="blue" className="bg-blue-500/20 text-blue-300 border-none">Receipt #SUR-77291-B</Badge>
+              </div>
+
+              {/* Receipt Details */}
+              <div className="p-10 space-y-8">
+                <div className="space-y-5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black text-content-muted uppercase tracking-widest">Package</span>
+                    <span className="text-sm font-black text-slate-900 tracking-tight">Full Care Suite</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black text-content-muted uppercase tracking-widest">Date</span>
+                    <span className="text-sm font-black text-slate-900 tracking-tight">Apr 28, 2024</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black text-content-muted uppercase tracking-widest">Method</span>
+                    <span className="text-sm font-black text-slate-900 tracking-tight">•••• 4242</span>
+                  </div>
+                  <div className="pt-6 border-t border-slate-50 flex justify-between items-center">
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Total</span>
+                    <span className="text-3xl font-black text-primary tracking-tighter">$499.00</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex flex-col gap-3">
+                  <Button variant="ghost" className="bg-slate-50 border-slate-100 py-4">
+                    <Download className="w-5 h-5" />
+                    Download PDF
+                  </Button>
+                  <Button variant="ghost" className="bg-emerald-50 text-emerald-600 border-emerald-100 py-4">
+                    <Share2 className="w-5 h-5" />
+                    WhatsApp Receipt
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="bg-slate-50 p-6 text-center border-t border-slate-100">
+                <button 
+                  onClick={() => setView('dashboard')}
+                  className="text-primary font-black text-[10px] uppercase tracking-widest hover:bg-white px-6 py-2 rounded-full transition-all"
+                >
+                  Return to Dashboard
+                </button>
+              </div>
+            </Card>
+            
+            <p className="mt-10 text-content-muted text-[10px] font-black uppercase tracking-[0.2em] text-center leading-relaxed">
+              Care package is now activated.<br/>
+              Ready for superior recovery.
+            </p>
+          </motion.div>
+        )}
+
+        {view === 'payment' && (
+          <motion.div
+            key="payment"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto pb-64 no-scrollbar"
+          >
+            <Header title="Care Packages" onBack={() => setView('dashboard')} />
+
+            <Container className="space-y-12 pb-12">
+              <div className="text-center space-y-2">
+                <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Superior Support</h2>
+                <p className="text-content-secondary font-medium tracking-tight">Choose the best care path for your recovery.</p>
+              </div>
+
+              {/* Package Cards */}
+              <div className="space-y-8">
+                {[
+                  { 
+                    id: 'basic', 
+                    name: 'Essential Care', 
+                    price: '$199', 
+                    features: ['Initial Assessment', 'AI Chat Assistant', 'Pre-op Materials'],
+                    popular: false
+                  },
+                  { 
+                    id: 'premium', 
+                    name: 'Elite Recovery', 
+                    price: '$499', 
+                    features: ['Unlimited AI Access', 'Doctor Consultations', 'Recovery Roadmap', 'Priority Support'],
+                    popular: true
+                  },
+                  { 
+                    id: 'vip', 
+                    name: 'VIP Concierge', 
+                    price: '$999', 
+                    features: ['Dedicated Care Lead', '24/7 Priority Channel', 'Home Support', 'VIP Lounge Access'],
+                    popular: false
+                  }
+                ].map((plan) => (
+                  <motion.div
+                    key={plan.id}
+                    whileHover={{ y: -4 }}
+                  >
+                    <Card className={`p-10 relative group transition-all duration-500 ${
+                      plan.popular 
+                      ? 'border-primary ring-4 ring-primary/5 bg-white shadow-strong scale-105 z-10' 
+                      : 'hover:border-slate-300'
+                    }`}>
+                      {plan.popular && (
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+                          <Badge variant="blue" className="px-6 py-2 shadow-primary">Member's Choice</Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-start mb-10">
+                        <div className="space-y-1">
+                          <h4 className="text-2xl font-black text-slate-900 tracking-tight leading-none">{plan.name}</h4>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-[0.2em]">Full Activation</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-4xl font-black text-slate-900 tracking-tighter">{plan.price}</span>
+                        </div>
+                      </div>
+
+                      <ul className="space-y-5 mb-10">
+                        {plan.features.map((feat, i) => (
+                          <li key={i} className="flex items-center gap-4 text-content-secondary font-medium tracking-tight text-sm">
+                            <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                              <Check className="w-3.5 h-3.5 text-primary" strokeWidth={4} />
+                            </div>
+                            {feat}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button 
+                        variant={plan.popular ? 'primary' : 'secondary'} 
+                        className="py-5 shadow-soft"
+                      >
+                        Select Plan
+                      </Button>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="grid grid-cols-2 gap-4 pb-12">
+                <Card className="p-6 flex items-center gap-4 bg-slate-50 border-none">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-soft">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1">Encrypted</p>
+                    <p className="text-[9px] text-content-muted font-black uppercase tracking-widest">SSL Security</p>
+                  </div>
+                </Card>
+                <Card className="p-6 flex items-center gap-4 bg-slate-50 border-none">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-soft">
+                    <Clock className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1">Instant</p>
+                    <p className="text-[9px] text-content-muted font-black uppercase tracking-widest">Plan Access</p>
+                  </div>
+                </Card>
+              </div>
+            </Container>
+
+            {/* Bottom Sticky Action */}
+            <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-white/90 backdrop-blur-2xl border-t border-slate-100 z-40 shadow-strong flex flex-col gap-6">
+              <div className="flex justify-center gap-6 text-[10px] font-black text-content-muted uppercase tracking-[0.3em]">
+                <span>Visa</span><span>Amex</span><span>Apple Pay</span>
+              </div>
+              <Button
+                variant="primary"
+                onClick={() => setView('receipt')}
+                className="py-6 shadow-primary group"
+              >
+                Complete Payment
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {view === 'booking' && (
+          <motion.div
+            key="booking"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto pb-40 no-scrollbar"
+          >
+            <Header title="Schedule" onBack={() => setView('dashboard')} />
+
+            <Container className="space-y-12">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Book Appointment</h2>
+                <p className="text-content-secondary font-medium tracking-tight">Select your preferred slot for consultation.</p>
+              </div>
+
+              {/* Date Selector */}
+              <section>
+                <div className="flex justify-between items-center mb-8">
+                  <SectionTitle title="Select Date" />
+                  <Badge variant="blue">May 2024</Badge>
+                </div>
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-1">
+                  {[...Array(14)].map((_, i) => {
+                    const day = i + 10;
+                    const date = new Date(2024, 4, day);
+                    const isSelected = selectedDate === day;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedDate(day)}
+                        className={`flex flex-col items-center gap-2 min-w-[72px] py-6 rounded-3xl transition-all border-4 shadow-soft ${
+                          isSelected 
+                          ? 'bg-primary border-primary text-white shadow-primary scale-110 z-10' 
+                          : 'bg-white border-transparent text-slate-400 hover:border-slate-50'
+                        }`}
+                      >
+                        <span className="text-[10px] font-black uppercase tracking-widest leading-none">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                        <span className="text-xl font-black tracking-tighter">{day}</span>
+                        {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full mt-1" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {/* Time Selection */}
+              <section>
+                 <SectionTitle title="Preferred Time" />
+                 <div className="grid grid-cols-3 gap-4 mt-6">
+                    {['09:00', '10:00', '11:20', '14:00', '15:30', '17:00'].map((time) => (
+                      <button
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        className={`p-5 rounded-2xl font-black text-sm tracking-tight transition-all border-4 ${
+                          selectedTime === time
+                          ? 'bg-slate-900 border-slate-900 text-white shadow-strong'
+                          : 'bg-white border-slate-50 text-slate-400 hover:border-slate-100'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                 </div>
+              </section>
+
+              {/* Consultation Type */}
+              <section className="pb-12">
+                <SectionTitle title="Session Type" />
+                <div className="space-y-4 mt-6">
+                   {['Initial Assessment', 'Follow-up Call', 'Pre-surgery Evaluation'].map((type) => (
+                     <Card 
+                        key={type}
+                        className={`p-6 flex items-center justify-between group cursor-pointer transition-all ${
+                          type === 'Initial Assessment' ? 'border-primary ring-2 ring-primary/5' : ''
+                        }`}
+                     >
+                       <span className={`font-black tracking-tight ${type === 'Initial Assessment' ? 'text-slate-900' : 'text-content-secondary'}`}>{type}</span>
+                       <div className={`w-8 h-8 rounded-full border-4 flex items-center justify-center transition-all ${
+                          type === 'Initial Assessment' ? 'border-primary' : 'border-slate-50 group-hover:border-slate-100'
+                       }`}>
+                          {type === 'Initial Assessment' && <div className="w-3 h-3 bg-primary rounded-full" />}
+                       </div>
+                     </Card>
+                   ))}
+                </div>
+              </section>
+            </Container>
+
+            {/* Confirm Banner */}
+            <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-white/90 backdrop-blur-2xl border-t border-slate-100 z-40 shadow-strong">
+              <Button
+                variant="primary"
+                onClick={() => setView('dashboard')}
+                disabled={!selectedTime}
+                className="py-6 shadow-primary group"
+              >
+                <span>Confirm Appointment</span>
+                <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </Button>
             </div>
           </motion.div>
         )}
@@ -489,106 +981,106 @@ export default function App() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
-            className="flex-1 flex flex-col bg-white overflow-y-auto"
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar"
           >
-            {/* Header */}
-            <div className="p-6 pt-10 sticky top-0 bg-white z-20 flex items-center justify-between">
-              <button 
-                onClick={() => setView('dashboard')}
-                className="p-2 -ml-2 rounded-xl hover:bg-slate-50 transition-colors"
-              >
-                <ArrowRight className="w-6 h-6 rotate-180 text-slate-800" />
-              </button>
-              <h3 className="font-bold text-slate-900">Upload Records</h3>
-              <div className="w-10"></div>
-            </div>
+            <Header title="Records" onBack={() => setView('dashboard')} />
 
-            <div className="p-8 flex-1 flex flex-col space-y-8">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">Import Documents</h2>
-                <p className="text-slate-500">Quickly upload scans, MRI, or X-rays for instant AI analysis.</p>
+            <Container className="space-y-12 pb-40">
+              <div className="space-y-2 text-center">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Digital Vault</h2>
+                <p className="text-content-secondary font-medium tracking-tight">Upload medical scans for instant AI analysis.</p>
               </div>
 
               {/* Upload Area */}
               <motion.div
-                whileHover={{ borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgb(248, 250, 252)' }}
+                whileHover={{ scale: 1.01 }}
                 onClick={simulateUpload}
-                className="border-3 border-dashed border-slate-200 rounded-[3rem] p-12 flex flex-col items-center justify-center gap-6 cursor-pointer transition-all group relative overflow-hidden"
               >
-                {isUploading && (
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${uploadProgress}%` }}
-                    className="absolute bottom-0 left-0 h-1.5 bg-blue-600 z-10"
-                  />
-                )}
-                <div className={`w-20 h-20 bg-blue-50 rounded-[2rem] flex items-center justify-center transition-transform duration-500 ${isUploading ? 'scale-110 animate-pulse' : 'group-hover:scale-110 group-hover:-rotate-3'}`}>
-                  <Upload className={`w-10 h-10 ${isUploading ? 'text-blue-400' : 'text-blue-600'}`} />
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-bold text-slate-900 mb-1">
-                    {isUploading ? `Uploading... ${uploadProgress}%` : "Drop records here"}
-                  </p>
-                  <p className="text-slate-400 text-sm font-medium">Or tap to browse your library</p>
-                </div>
+                <Card className="border-4 border-dashed border-slate-200 p-16 flex flex-col items-center justify-center gap-8 cursor-pointer transition-all hover:border-primary group bg-slate-50/50 overflow-hidden relative">
+                  {isUploading && (
+                    <motion.div 
+                      key="progress"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${uploadProgress}%` }}
+                      className="absolute bottom-0 left-0 h-2 bg-primary z-10"
+                    />
+                  )}
+                  <div className={`w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-strong transition-all duration-700 ${isUploading ? 'scale-110 rotate-12' : 'group-hover:scale-110 group-hover:-rotate-3'}`}>
+                    <Upload className={`w-10 h-10 ${isUploading ? 'text-primary animate-pulse' : 'text-primary'}`} />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-xl font-black text-slate-900 tracking-tight leading-none">
+                      {isUploading ? `Uploading ${uploadProgress}%` : "Import Records"}
+                    </p>
+                    <p className="text-[10px] text-content-muted font-black uppercase tracking-widest">Supports PDF, JPG, DICOM</p>
+                  </div>
+                </Card>
               </motion.div>
 
               {/* File List */}
-              <div className="space-y-4">
-                <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-[0.2em] mb-2 px-2">Uploaded Files</h4>
-                <AnimatePresence>
+              <div className="space-y-6">
+                <div className="flex justify-between items-end">
+                  <SectionTitle title="Vault Contents" />
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">{uploadedFiles.length} Total</span>
+                </div>
+                <AnimatePresence mode="popLayout">
                   {uploadedFiles.length === 0 ? (
                     <motion.div 
+                      key="empty"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="py-12 border-2 border-slate-50 rounded-3xl flex flex-col items-center gap-3 text-slate-300"
+                      className="py-20 border-4 border-slate-50 border-dashed rounded-[3rem] flex flex-col items-center gap-4 text-slate-200"
                     >
-                      <FileText className="w-8 h-8 opacity-20" />
-                      <span className="text-xs font-bold uppercase tracking-widest">No files yet</span>
+                      <File className="w-12 h-12 opacity-20" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.3em]">No records uploaded</span>
                     </motion.div>
                   ) : (
-                    uploadedFiles.map((file, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        className="bg-slate-50 p-5 rounded-[2rem] border border-slate-100 flex items-center gap-4 group"
-                      >
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-emerald-100 text-emerald-500'}`}>
-                          <FileText className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-bold text-slate-900 text-sm leading-tight mb-0.5">{file.name}</p>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{file.size}</p>
-                        </div>
-                        <button 
-                          onClick={(e) => {
-                             e.stopPropagation();
-                             setUploadedFiles(prev => prev.filter((_, idx) => idx !== i));
-                          }}
-                          className="p-3 text-slate-300 hover:text-red-500 transition-colors"
+                    <div className="space-y-4">
+                      {uploadedFiles.map((file, i) => (
+                        <motion.div
+                          key={file.name}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
                         >
-                          <Plus className="w-5 h-5 rotate-45" />
-                        </button>
-                      </motion.div>
-                    ))
+                          <Card className="p-6 flex items-center gap-6 group hover:border-primary transition-all">
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-soft ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                              <FileText className="w-7 h-7" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-black text-slate-900 tracking-tight leading-tight">{file.name}</p>
+                              <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">{file.size} • READY</p>
+                            </div>
+                            <button 
+                              onClick={(e) => {
+                                 e.stopPropagation();
+                                 setUploadedFiles(prev => prev.filter((_, idx) => idx !== i));
+                              }}
+                              className="p-3 text-slate-200 hover:text-red-500 transition-colors hover:bg-red-50 rounded-xl"
+                            >
+                              <Plus className="w-6 h-6 rotate-45" />
+                            </button>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
+            </Container>
 
-              {/* Submit CTA */}
-              {uploadedFiles.length > 0 && (
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+            {/* Submit CTA */}
+            {uploadedFiles.length > 0 && (
+              <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-white/90 backdrop-blur-2xl border-t border-slate-100 z-40 shadow-strong">
+                <Button
+                  variant="primary"
                   onClick={() => setView('dashboard')}
-                  className="w-full bg-slate-900 text-white rounded-[2rem] p-6 font-bold shadow-2xl shadow-slate-200 mt-auto hover:bg-slate-800 transition-all"
+                  className="py-6 shadow-primary shadow-2xl"
                 >
-                  Confirm Upload
-                </motion.button>
-              )}
-            </div>
+                  Verify Documents
+                </Button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -598,91 +1090,70 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col bg-slate-900 relative h-screen"
+            className="flex-1 flex flex-col bg-slate-950 relative h-screen overflow-hidden"
           >
             {/* Main Video (Doctor) */}
             <div className="absolute inset-0 z-0">
               <img 
                 src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1200&h=1200&fit=crop" 
                 alt="Doctor View" 
-                className={`w-full h-full object-cover transition-all duration-700 ${isCameraOff ? 'blur-2xl opacity-40' : 'opacity-80'}`}
+                className={`w-full h-full object-cover scale-110 transition-all duration-700 ${isCameraOff ? 'blur-3xl opacity-40' : 'opacity-80'}`}
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
             </div>
 
-            {/* Header Info */}
-            <div className="relative z-10 p-8 flex justify-between items-start">
+            {/* Top Bar */}
+            <div className="relative z-10 p-8 flex justify-between items-center bg-transparent backdrop-blur-none">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white">
-                  <Brain className="w-6 h-6" />
-                </div>
+                 <button 
+                  onClick={() => setView('dashboard')}
+                  className="p-4 bg-white/10 backdrop-blur-2xl rounded-2xl text-white border border-white/20 hover:bg-white/20 transition-all"
+                >
+                  <ArrowRight className="w-6 h-6 rotate-180" />
+                </button>
                 <div>
-                  <h3 className="text-white font-bold leading-none mb-1">Dr. Sarah Mitchell</h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <span className="text-[10px] uppercase font-bold text-white/60 tracking-wider">Encrypted Call</span>
-                  </div>
+                   <h3 className="text-xl font-black text-white tracking-tight leading-none">Consultation</h3>
+                   <div className="flex items-center gap-2 mt-1">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Live • 12:45</span>
+                   </div>
                 </div>
               </div>
-              <button className="p-3 bg-white/10 backdrop-blur-md rounded-2xl text-white border border-white/20">
-                <Maximize2 className="w-5 h-5" />
-              </button>
             </div>
 
-            {/* User PiP (Picture in Picture) */}
+            {/* Self View Card */}
             <motion.div 
-               drag
-               dragConstraints={{ left: 20, right: 300, top: 20, bottom: 500 }}
-               className="absolute top-32 right-6 w-32 h-44 bg-slate-800 rounded-3xl border-2 border-white/20 shadow-2xl overflow-hidden z-20 cursor-move"
+              drag
+              dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
+              className="absolute bottom-40 right-8 w-44 h-64 bg-slate-800 rounded-4xl overflow-hidden border-4 border-white/20 shadow-primary z-20"
             >
-              <img 
+               <img 
                 src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=300&fit=crop" 
                 alt="My View" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
-                 <span className="text-white text-[10px] font-bold uppercase tracking-widest leading-none">Self View</span>
-              </div>
             </motion.div>
 
-            {/* Bottom Controls */}
-            <div className="absolute bottom-16 inset-x-0 z-30 flex flex-col items-center gap-8">
-              <div className="flex items-center gap-6">
-                <motion.button 
-                   whileTap={{ scale: 0.9 }}
-                   onClick={() => setIsMuted(!isMuted)}
-                   className={`w-16 h-16 rounded-[2rem] flex items-center justify-center backdrop-blur-xl border-2 transition-all ${isMuted ? 'bg-red-500/80 border-red-400 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
-                >
-                  {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-                </motion.button>
-
-                <motion.button 
-                   whileTap={{ scale: 0.9 }}
-                   onClick={() => setView('dashboard')}
-                   className="w-20 h-20 bg-red-600 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl shadow-red-600/40 border-4 border-red-500/30 active:translate-y-1 transition-all"
-                   id="end-call"
-                >
-                  <PhoneOff className="w-8 h-8" />
-                </motion.button>
-
-                <motion.button 
-                   whileTap={{ scale: 0.9 }}
-                   onClick={() => setIsCameraOff(!isCameraOff)}
-                   className={`w-16 h-16 rounded-[2rem] flex items-center justify-center backdrop-blur-xl border-2 transition-all ${isCameraOff ? 'bg-slate-700/80 border-slate-600 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
-                >
-                  {isCameraOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
-                </motion.button>
-              </div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-white/80 text-xs font-bold uppercase tracking-[0.2em]"
-              >
-                12:45
-              </motion.div>
+            {/* UI Overlay Controls */}
+            <div className="absolute bottom-12 inset-x-0 px-8 z-30">
+               <Card className="bg-slate-900/60 backdrop-blur-3xl border-white/10 p-6 flex items-center justify-around rounded-[3rem]">
+                  {[
+                    { icon: isMuted ? MicOff : Mic, color: isMuted ? 'text-red-400' : 'text-white', action: () => setIsMuted(!isMuted) },
+                    { icon: isCameraOff ? VideoOff : Camera, color: isCameraOff ? 'text-red-400' : 'text-white', action: () => setIsCameraOff(!isCameraOff) },
+                    { icon: MessageSquare, color: 'text-white', action: () => setView('chat') },
+                    { icon: PhoneOff, color: 'text-white', bg: 'bg-red-500', shadow: 'shadow-red-500/40', action: () => setView('dashboard') }
+                  ].map((ctrl, i) => (
+                    <button 
+                      key={i}
+                      onClick={ctrl.action}
+                      className={`w-16 h-16 rounded-3xl flex items-center justify-center transition-all active:scale-90 ${ctrl.bg || 'bg-white/10 hover:bg-white/20'} ${ctrl.shadow || ''}`}
+                    >
+                      <ctrl.icon className={`w-7 h-7 ${ctrl.color}`} />
+                    </button>
+                  ))}
+               </Card>
             </div>
           </motion.div>
         )}
@@ -693,48 +1164,36 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="flex-1 flex flex-col bg-slate-50"
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
           >
-            {/* Chat Header */}
-            <div className="p-6 pt-10 sticky top-0 bg-white shadow-sm border-b border-slate-100 z-20 flex items-center gap-4">
-              <button 
-                onClick={() => setView('dashboard')}
-                className="p-2 -ml-2 rounded-xl hover:bg-slate-50 transition-colors"
-                id="chat-back"
-              >
-                <ArrowRight className="w-6 h-6 rotate-180 text-slate-800" />
-              </button>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-                  <Brain className="w-6 h-6" />
+            <Header 
+              title="Assistant AI" 
+              onBack={() => setView('dashboard')}
+              rightElement={
+                <div className="flex items-center gap-2 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                  <span className="text-[9px] uppercase tracking-widest font-black text-emerald-600 leading-none">Specialist Online</span>
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">SurgiBot AI</h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Online Specialist</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              }
+            />
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 flex flex-col">
+            <div className="flex-1 overflow-y-auto p-8 space-y-10 flex flex-col no-scrollbar">
               {chatHistory.map((msg) => (
                 <motion.div
                   key={msg.id}
                   initial={{ opacity: 0, scale: 0.9, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  className={`max-w-[85%] p-4 rounded-3xl shadow-sm relative group ${
+                  className={`max-w-[85%] p-6 rounded-4xl shadow-soft relative group ${
                     msg.role === 'ai' 
-                    ? 'bg-white text-slate-800 self-start rounded-tl-none border border-slate-100 shadow-slate-200/50' 
-                    : 'bg-slate-900 text-white self-end rounded-tr-none shadow-xl shadow-slate-200'
+                    ? 'bg-white text-slate-800 self-start rounded-tl-none border-2 border-slate-50' 
+                    : 'bg-slate-900 text-white self-end rounded-tr-none shadow-strong'
                   }`}
                 >
-                  <p className="text-sm leading-relaxed mb-1">{msg.text}</p>
-                  <div className={`flex items-center justify-end gap-1 ${msg.role === 'ai' ? 'text-slate-400' : 'text-slate-500'}`}>
-                    <span className="text-[9px] font-bold uppercase tracking-tighter">{msg.time}</span>
-                    {msg.role === 'user' && <CheckCheck className="w-3 h-3 text-blue-400" />}
+                  <p className="text-sm font-medium leading-relaxed mb-2">{msg.text}</p>
+                  <div className={`flex items-center justify-end gap-1.5 ${msg.role === 'ai' ? 'text-content-muted' : 'text-slate-400'}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest leading-none">{msg.time}</span>
+                    {msg.role === 'user' && <CheckCheck className="w-3.5 h-3.5 text-primary" strokeWidth={3} />}
                   </div>
                 </motion.div>
               ))}
@@ -743,25 +1202,25 @@ export default function App() {
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white p-4 rounded-3xl rounded-tl-none border border-slate-100 self-start flex gap-1 items-center"
+                  className="bg-white p-6 rounded-4xl rounded-tl-none border-2 border-slate-50 self-start flex gap-1.5 items-center shadow-soft"
                 >
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" />
+                  <span className="w-2 h-2 bg-primary/20 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-2 h-2 bg-primary rounded-full animate-bounce" />
                 </motion.div>
               )}
               <div ref={chatEndRef} />
             </div>
 
             {/* Quick Replies & Input */}
-            <div className="p-6 bg-white border-t border-slate-100 space-y-4">
+            <div className="p-8 bg-white border-t border-slate-50 space-y-6 pb-12 shadow-strong">
               {/* Quick Replies */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
-                {["Pain levels?", "Next appointment?", "Upload meds"].map((reply) => (
+              <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
+                {["Pain levels?", "Next Visit?", "Upload Meds", "Expert Help"].map((reply) => (
                   <button
                     key={reply}
                     onClick={() => handleSendMessage(reply)}
-                    className="whitespace-nowrap px-4 py-2 bg-slate-50 text-slate-600 border border-slate-100 rounded-full text-xs font-bold hover:border-blue-200 hover:text-blue-600 transition-all shrink-0 active:scale-95"
+                    className="whitespace-nowrap px-6 py-3 bg-slate-50 text-slate-600 border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-primary hover:text-primary transition-all shrink-0 active:scale-95"
                   >
                     {reply}
                   </button>
@@ -769,19 +1228,19 @@ export default function App() {
               </div>
 
               {/* Text Input Control */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <button 
-                  className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all active:scale-90"
+                  className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white border-2 border-transparent hover:border-slate-100 transition-all active:scale-90 shadow-soft"
                   id="chat-attach"
                 >
-                  <Paperclip className="w-5 h-5" />
+                  <Paperclip className="w-6 h-6" />
                 </button>
                 
-                <div className="flex-1 flex items-center bg-slate-50 border-2 border-slate-100 focus-within:border-blue-500 focus-within:bg-white rounded-2xl px-4 py-1 transition-all shadow-inner">
+                <div className="flex-1 flex items-center bg-slate-50 border-4 border-slate-50 focus-within:border-primary/10 focus-within:bg-white rounded-3xl px-6 py-1 transition-all shadow-inner relative h-16">
                    <input 
                       type="text" 
-                      placeholder="Type a message..."
-                      className="flex-1 bg-transparent border-none outline-none p-3 text-sm font-medium text-slate-900 placeholder:text-slate-300"
+                      placeholder="Type your question..."
+                      className="flex-1 bg-transparent border-none outline-none p-3 text-sm font-bold text-slate-900 placeholder:text-content-muted"
                       value={chatMessage}
                       onChange={(e) => setChatMessage(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(chatMessage)}
@@ -793,10 +1252,10 @@ export default function App() {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleSendMessage(chatMessage)}
                   disabled={!chatMessage.trim()}
-                  className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 disabled:opacity-50 disabled:bg-slate-200 disabled:shadow-none transition-all group"
+                  className="w-16 h-16 bg-primary text-white rounded-3xl flex items-center justify-center shadow-primary disabled:opacity-30 disabled:bg-slate-200 disabled:shadow-none transition-all group"
                   id="send-chat"
                 >
-                  <Send className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <Send className="w-6 h-6 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </motion.button>
               </div>
             </div>
@@ -945,117 +1404,127 @@ export default function App() {
         {view === 'doctorProfile' && (
           <motion.div
             key="doctorProfile"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="flex-1 flex flex-col bg-white overflow-y-auto pb-32"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar scroll-smooth"
           >
-            {/* Immersive Header Image */}
-            <div className="relative h-[45vh] w-full bg-slate-100">
+            {/* Header Area with Immersive Image */}
+            <div className="h-[45vh] relative shrink-0">
               <img 
-                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&h=800&fit=crop" 
+                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&h=1200&fit=crop" 
                 alt="Dr. Sarah Mitchell" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
               
               <button 
-                onClick={() => setView('caseDetail')}
-                className="absolute top-10 left-6 p-3 bg-white/20 backdrop-blur-md rounded-2xl text-white border border-white/30 hover:bg-white/40 transition-colors"
+                onClick={() => setView('dashboard')}
+                className="absolute top-12 left-8 p-4 bg-white/10 backdrop-blur-3xl rounded-2xl text-white border border-white/20 hover:bg-white/20 transition-all active:scale-95"
               >
                 <ArrowRight className="w-6 h-6 rotate-180" />
               </button>
 
-              <div className="absolute bottom-8 left-8 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 bg-blue-600 text-xs font-bold rounded-full uppercase tracking-wider">Top Specialist</span>
-                  <div className="flex items-center gap-1 text-amber-400">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span className="text-sm font-bold">4.9 (1.2k Reviews)</span>
+              <div className="absolute bottom-12 left-8 right-8">
+                <div className="flex items-center gap-3 mb-3">
+                  <Badge variant="blue" className="bg-primary/20 backdrop-blur-xl border-primary/30 text-white">Top Specialist</Badge>
+                  <div className="flex items-center gap-1.5 text-amber-400 drop-shadow-md">
+                    <Star className="w-5 h-5 fill-current" />
+                    <span className="text-sm font-black tracking-tight">4.9 (1.2k Reviews)</span>
                   </div>
                 </div>
-                <h2 className="text-4xl font-bold tracking-tight">Dr. Sarah Mitchell</h2>
-                <p className="text-white/80 font-medium tracking-wide">Orthopedic & Sports Surgeon</p>
+                <h2 className="text-4xl font-black text-white tracking-tight leading-none mb-2">Dr. Sarah Mitchell</h2>
+                <p className="text-white/70 font-black uppercase text-[10px] tracking-[0.2em]">Orthopedic & Sports Surgeon</p>
               </div>
             </div>
 
             {/* Profile Content */}
-            <div className="px-8 -mt-6 rounded-t-[3rem] bg-white relative z-10 pt-10 space-y-8">
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  { label: 'Experience', val: '12 yr', icon: Clock, color: 'bg-blue-50 text-blue-600' },
-                  { label: 'Patients', val: '4.5k+', icon: User, color: 'bg-emerald-50 text-emerald-600' },
-                  { label: 'Rating', val: '4.9', icon: ShieldCheck, color: 'bg-amber-50 text-amber-600' },
-                ].map((stat, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2 p-4 rounded-3xl bg-slate-50 border border-slate-100">
-                    <div className={`p-2 rounded-xl ${stat.color}`}>
-                      <stat.icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-sm font-bold text-slate-900">{stat.val}</span>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider text-center">{stat.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Bio Section */}
-              <section>
-                <h3 className="text-lg font-bold text-slate-900 mb-4">About the Specialist</h3>
-                <p className="text-slate-500 leading-relaxed">
-                  Dr. Sarah Mitchell is a globally recognized board-certified orthopedic surgeon specializing in minimally invasive knee and shoulder reconstructions. With over 12 years of experience at St. Jude Medical Center, she pioneered the accelerated recovery protocol for athletes.
-                </p>
-              </section>
-
-              {/* Specializations Tags */}
-              <section>
-                <div className="flex flex-wrap gap-2">
-                  {['ACL Reconstruction', 'Joint Replacement', 'Sports Medicine', 'Cartilage Repair', 'Arthroscopy'].map((tag) => (
-                    <span key={tag} className="px-4 py-2 bg-slate-50 text-slate-600 rounded-2xl text-xs font-bold border border-slate-100">
-                      {tag}
-                    </span>
+            <div className="px-8 -mt-10 rounded-t-[3.5rem] bg-surface-bg relative z-10 pt-10">
+              <Container className="space-y-12 pb-48">
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: 'Experience', val: '12 yr', icon: Clock, color: 'text-primary' },
+                    { label: 'Patients', val: '4.5k+', icon: User, color: 'text-emerald-500' },
+                    { label: 'Cleared', val: '98%', icon: ShieldCheck, color: 'text-amber-500' },
+                  ].map((stat, i) => (
+                    <Card key={i} className="flex flex-col items-center gap-2 p-5 text-center">
+                      <div className={`p-2.5 rounded-2xl bg-slate-50 ${stat.color}`}>
+                        <stat.icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-lg font-black text-slate-900 tracking-tight leading-none">{stat.val}</span>
+                      <span className="text-[9px] uppercase font-black text-content-muted tracking-widest">{stat.label}</span>
+                    </Card>
                   ))}
                 </div>
-              </section>
 
-              {/* Education / Credentials */}
-              <section className="pb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Education</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
-                      <Stethoscope className="w-5 h-5 text-slate-400" />
-                    </div>
-                    <div>
-                      <h5 className="font-bold text-slate-800 text-sm">Harvard Medical School</h5>
-                      <p className="text-xs text-slate-400">Doctor of Medicine (M.D.) • 2008-2012</p>
-                    </div>
+                {/* Bio Section */}
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <SectionTitle title="About the Specialist" />
+                  <Card className="p-8">
+                    <p className="text-content-secondary font-medium leading-relaxed">
+                      Dr. Sarah Mitchell is a globally recognized board-certified orthopedic surgeon specializing in minimally invasive knee and shoulder reconstructions. With over 12 years of experience at St. Jude Medical Center, she pioneered the accelerated recovery protocol for athletes.
+                    </p>
+                  </Card>
+                </motion.section>
+
+                {/* Specializations Tags */}
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <SectionTitle title="Specializations" />
+                  <div className="flex flex-wrap gap-2.5">
+                    {['ACL Reconstruction', 'Joint Replacement', 'Sports Medicine', 'Cartilage Repair', 'Arthroscopy'].map((tag) => (
+                      <Badge key={tag} className="px-6 py-3 rounded-2xl bg-white border-2 border-slate-50 text-slate-600 font-bold text-xs shadow-soft leading-none">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
-                      <Stethoscope className="w-5 h-5 text-slate-400" />
-                    </div>
-                    <div>
-                      <h5 className="font-bold text-slate-800 text-sm">Johns Hopkins University</h5>
-                      <p className="text-xs text-slate-400">Surgical Residency • 2012-2016</p>
-                    </div>
+                </motion.section>
+
+                {/* Education / Credentials */}
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <SectionTitle title="Education" />
+                  <div className="space-y-4">
+                    {[
+                      { school: 'Harvard Medical School', degree: 'Doctor of Medicine (M.D.)', years: '2008-2012' },
+                      { school: 'Johns Hopkins University', degree: 'Surgical Residency', years: '2012-2016' }
+                    ].map((edu, i) => (
+                      <Card key={i} className="p-6 flex items-center gap-6">
+                        <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center flex-shrink-0 border-2 border-slate-100">
+                          <Stethoscope className="w-7 h-7 text-primary" />
+                        </div>
+                        <div>
+                          <h5 className="font-black text-slate-900 text-lg tracking-tight leading-tight mb-1">{edu.school}</h5>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-widest">{edu.degree} • {edu.years}</p>
+                        </div>
+                      </Card>
+                    ))}
                   </div>
-                </div>
-              </section>
+                </motion.section>
+              </Container>
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 inset-x-0 p-8 pt-4 pb-12 bg-white/90 backdrop-blur-xl border-t border-slate-100 z-40">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+            <FloatingBanner>
+               <Button 
                 onClick={() => setView('chat')}
-                className="w-full bg-blue-600 text-white rounded-[2rem] p-6 font-bold flex items-center justify-center gap-3 shadow-2xl shadow-blue-100 hover:bg-blue-700 transition-all group"
+                icon={ChevronRight}
               >
-                <span>Start Consultation</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            </div>
+                <span>Consult with Specialist</span>
+              </Button>
+            </FloatingBanner>
           </motion.div>
         )}
 
@@ -1065,85 +1534,83 @@ export default function App() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="flex-1 flex flex-col bg-slate-50 overflow-y-auto pb-32"
+            className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar"
           >
-            {/* Header */}
-            <div className="p-6 pt-10 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 flex items-center justify-between">
-              <button 
-                onClick={() => setView('dashboard')}
-                className="p-2 -ml-2 rounded-xl hover:bg-white transition-colors border border-transparent hover:border-slate-100"
-              >
-                <ArrowRight className="w-6 h-6 rotate-180 text-slate-800" />
-              </button>
-              <h3 className="font-bold text-slate-900">Application Details</h3>
-              <button className="p-2 rounded-xl hover:bg-white border border-transparent hover:border-slate-100">
-                <MoreHorizontal className="w-6 h-6 text-slate-600" />
-              </button>
-            </div>
+            <Header 
+              title="Case Status" 
+              onBack={() => setView('dashboard')}
+              rightElement={
+                <button className="p-3 rounded-2xl hover:bg-slate-50 transition-all">
+                  <MoreHorizontal className="w-6 h-6 text-content-muted" />
+                </button>
+              }
+            />
 
-            <div className="px-6 space-y-6">
+            <Container className="space-y-12 pb-40">
               {/* Case Summary Card */}
-              <motion.section
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest block mb-2">{selectedCase.type}</span>
-                    <h2 className="text-2xl font-bold text-slate-900 leading-tight">{selectedCase.title}</h2>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    selectedCase.status === 'In Progress' ? 'bg-blue-50 text-blue-600' :
-                    selectedCase.status === 'Assigned' ? 'bg-teal-50 text-teal-600' :
-                    'bg-amber-50 text-amber-600'
-                  }`}>
-                    {selectedCase.status}
-                  </span>
-                </div>
-                <p className="text-slate-500 text-sm leading-relaxed pb-6 border-b border-slate-50">
-                  {selectedCase.description}
-                </p>
-                <div className="pt-6 flex justify-between items-center text-xs text-slate-400 font-medium">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>ID: #SURG-2024-{selectedCase.id}</span>
-                  </div>
-                  <span>Applied on {selectedCase.date}</span>
-                </div>
-              </motion.section>
+              {selectedCase && (
+                <motion.section
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Card className="p-10">
+                    <div className="flex justify-between items-start mb-8">
+                      <div className="space-y-1.5">
+                        <Badge variant="blue">{selectedCase.type}</Badge>
+                        <h2 className="text-3xl font-black text-slate-900 leading-tight tracking-tight">{selectedCase.title}</h2>
+                      </div>
+                      <Badge variant={
+                        selectedCase.status === 'In Progress' ? 'blue' :
+                        selectedCase.status === 'Assigned' ? 'emerald' :
+                        'amber'
+                      }>
+                        {selectedCase.status}
+                      </Badge>
+                    </div>
+                    <p className="text-content-secondary font-medium leading-relaxed pb-8 border-b border-slate-50">
+                      {selectedCase.description}
+                    </p>
+                    <div className="pt-8 flex justify-between items-center text-[10px] text-content-muted font-black uppercase tracking-[0.2em]">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-4 h-4" />
+                        <span>ID: #SRG-{selectedCase.id}</span>
+                      </div>
+                      <span>{selectedCase.date}</span>
+                    </div>
+                  </Card>
+                </motion.section>
+              )}
 
               {/* Assigned Doctor Section */}
-              <motion.section
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                onClick={() => setView('doctorProfile')}
-                className="cursor-pointer group"
-              >
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-4">Primary Care Lead</h4>
-                <div className="bg-slate-900 rounded-[2.5rem] p-6 text-white overflow-hidden relative shadow-xl shadow-slate-200 group-hover:bg-slate-800 transition-all">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-400/20 transition-colors"></div>
-                   <div className="flex items-center gap-4 relative z-10">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-800 border-2 border-slate-700">
-                      <img 
-                        src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
-                        alt={selectedCase.doctor} 
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-white">{selectedCase.doctor}</h4>
-                      <p className="text-slate-400 text-sm">Consulting Specialist</p>
-                      <div className="flex items-center gap-1 mt-1 text-blue-400">
-                        <ShieldCheck className="w-4 h-4" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Expert Verified</span>
+              {selectedCase && (
+                <motion.section
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <SectionTitle title="Medical Team" />
+                  <Card onClick={() => setView('doctorProfile')} className="mt-6 bg-slate-900 border-none p-8 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/20 rounded-full -mr-24 -mt-24 blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+                    <div className="flex items-center gap-6 relative z-10">
+                      <div className="w-20 h-20 rounded-3xl overflow-hidden bg-slate-800 border-2 border-slate-700 shadow-strong">
+                        <img 
+                          src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
+                          alt={selectedCase.doctor} 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-xl font-black text-white tracking-tight">{selectedCase.doctor}</h4>
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Surgical Specialist</p>
+                        <div className="mt-3">
+                          <Badge variant="blue" className="bg-blue-500/20 text-blue-300 border-none">Verified Expert</Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </motion.section>
+                  </Card>
+                </motion.section>
+              )}
 
               {/* Timeline Status */}
               <motion.section
@@ -1151,8 +1618,8 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-4">Care Journey Progress</h4>
-                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative">
+                <SectionTitle title="Care Journey" />
+                <Card className="mt-6 p-10 relative">
                   {[
                     { label: 'Initial Assessment', state: 'completed', date: 'Mar 12' },
                     { label: 'Surgical Consultation', state: 'completed', date: 'Mar 15' },
@@ -1160,31 +1627,28 @@ export default function App() {
                     { label: 'Surgical Day', state: 'upcoming', date: 'TBD' },
                     { label: 'Post-Op Recovery', state: 'upcoming', date: 'TBD' }
                   ].map((step, idx, arr) => (
-                    <div key={idx} className="flex gap-4 min-h-[60px] relative">
-                      {/* Connector Line */}
+                    <div key={idx} className="flex gap-8 relative">
                       {idx !== arr.length - 1 && (
-                        <div className={`absolute left-[11px] top-[24px] w-[2px] h-full ${step.state === 'completed' ? 'bg-blue-600' : 'bg-slate-100'}`} />
+                        <div className={`absolute left-[13px] top-[30px] w-[2px] h-[calc(100%-10px)] ${step.state === 'completed' ? 'bg-primary' : 'bg-slate-100'}`} />
                       )}
                       
-                      {/* Indicator Dot */}
-                      <div className="relative z-10 pt-1">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                          step.state === 'completed' ? 'bg-blue-600 border-blue-600' : 
-                          step.state === 'active' ? 'bg-white border-blue-600' : 
-                          'bg-white border-slate-100'
+                      <div className="relative z-10 pt-1.5 slice-center">
+                        <div className={`w-7 h-7 rounded-full border-4 flex items-center justify-center transition-all duration-500 shadow-strong ${
+                          step.state === 'completed' ? 'bg-primary border-primary' : 
+                          step.state === 'active' ? 'bg-white border-primary border-2 animate-pulse' : 
+                          'bg-white border-slate-100 border-2'
                         }`}>
-                          {step.state === 'completed' && <ArrowRight className="w-3 h-3 text-white" />}
-                          {step.state === 'active' && <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />}
+                          {step.state === 'completed' && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
                         </div>
                       </div>
 
-                      <div className="flex-1 pb-8">
-                        <h5 className={`text-sm font-bold ${step.state === 'upcoming' ? 'text-slate-300' : 'text-slate-900'}`}>{step.label}</h5>
-                        <p className={`text-[10px] font-medium uppercase tracking-wider ${step.state === 'active' ? 'text-blue-600' : 'text-slate-400'}`}>{step.date}</p>
+                      <div className="flex-1 pb-10">
+                        <h5 className={`text-base font-black tracking-tight ${step.state === 'upcoming' ? 'text-slate-300' : 'text-slate-900'}`}>{step.label}</h5>
+                        <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${step.state === 'active' ? 'text-primary' : 'text-content-muted'}`}>{step.date}</p>
                       </div>
                     </div>
                   ))}
-                </div>
+                </Card>
               </motion.section>
 
               {/* Reports Section */}
@@ -1193,43 +1657,44 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <div className="flex justify-between items-center mb-4 ml-4">
-                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Medical Documentation</h4>
-                   <button className="text-blue-600 text-[10px] font-bold uppercase tracking-widest">View All</button>
+                <div className="flex justify-between items-center mb-6">
+                  <SectionTitle title="Records" />
+                  <button className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 px-4 py-2 rounded-full transition-all">View All</button>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {['MRI Scan Report', 'Blood Panel Results'].map((report, i) => (
-                    <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 flex items-center gap-4 hover:shadow-md transition-all group">
-                      <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
-                        <FileText className="w-6 h-6" />
+                    <Card key={i} className="p-6 flex items-center gap-6 group hover:border-primary transition-all">
+                      <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FileText className="w-7 h-7" />
                       </div>
                       <div className="flex-1">
-                        <h5 className="text-sm font-bold text-slate-800">{report}</h5>
-                        <p className="text-[10px] text-slate-400 font-medium">PDF • 2.4 MB • MAR 14</p>
+                        <h5 className="text-base font-black text-slate-900 tracking-tight">{report}</h5>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">PDF • 2.4 MB • MAR 14</p>
                       </div>
-                      <button className="p-2 text-slate-400 group-hover:text-blue-600 transition-colors">
+                      <button className="p-3 text-slate-200 group-hover:text-primary transition-colors hover:bg-blue-50 rounded-xl">
                         <ArrowRight className="w-5 h-5 -rotate-45" />
                       </button>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </motion.section>
-            </div>
+            </Container>
 
             {/* Bottom Actions Bar */}
-            <div className="fixed bottom-0 inset-x-0 p-6 pb-12 bg-white/90 backdrop-blur-xl border-t border-slate-100 flex gap-4 z-40 shadow-[0_-8px_30px_rgba(0,0,0,0.02)]">
-                <button 
+            <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-white/90 backdrop-blur-2xl border-t border-slate-100 flex gap-4 z-40 shadow-strong">
+                <Button 
+                   variant="secondary"
                    onClick={() => setView('chat')}
-                   className="flex-1 bg-slate-900 text-white rounded-2xl p-5 font-bold flex items-center justify-center gap-3 shadow-xl transition-all"
+                   className="flex-1 py-5 bg-slate-900 text-white hover:bg-slate-800"
                 >
-                  <MessageCircle className="w-5 h-5" />
+                  <MessageSquare className="w-5 h-5" />
                   Chat Assistant
-                </button>
+                </Button>
                 <button 
                    onClick={() => setView('videoCall')}
-                   className="bg-blue-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 animate-bounce-slow"
+                   className="flex-[0.3] bg-primary text-white h-16 rounded-3xl flex items-center justify-center shadow-primary group transition-all active:scale-95"
                 >
-                   <Video className="w-6 h-6" />
+                   <Video className="w-7 h-7 group-hover:scale-110 transition-transform" />
                 </button>
             </div>
           </motion.div>
@@ -1240,15 +1705,15 @@ export default function App() {
             key="dashboard"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col relative pb-24"
+            className="flex-1 flex flex-col relative bg-surface-bg h-screen"
           >
-            {/* Fixed Header */}
-            <div className="p-6 pt-10 sticky top-0 bg-slate-50/80 backdrop-blur-md z-10 flex justify-between items-start">
+            {/* Nav Header */}
+            <div className="p-8 pb-6 sticky top-0 bg-white/80 backdrop-blur-xl z-20 flex justify-between items-center border-b border-slate-100 shadow-soft">
               <div>
                 <motion.p 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-slate-500 text-sm font-medium mb-1"
+                  className="text-[10px] font-black text-content-muted uppercase tracking-[0.2em] mb-1.5"
                 >
                   Good morning,
                 </motion.p>
@@ -1256,161 +1721,151 @@ export default function App() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-3xl font-bold text-slate-900 tracking-tight"
+                  className="text-3xl font-black text-slate-900 tracking-tight"
                 >
                   Krishna
                 </motion.h2>
               </div>
               <motion.button 
                 whileTap={{ scale: 0.9 }}
-                className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 relative"
+                onClick={() => setView('notifications')}
+                className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group transition-all hover:bg-white hover:shadow-soft"
               >
-                <Bell className="w-6 h-6 text-slate-600" />
-                <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                <Bell className="w-6 h-6 text-content-muted group-hover:text-primary transition-colors" />
+                {notifications.some(n => !n.read) && (
+                  <span className="absolute top-4 right-4 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full shadow-lg shadow-red-200"></span>
+                )}
               </motion.button>
             </div>
 
             {/* Content Scroll Area */}
-            <div className="px-6 space-y-6 pb-6 overflow-y-auto flex-1">
-              {activeTab === 'home' && (
-                <>
-                  {/* Active Case Card */}
-                  <motion.section
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    onClick={() => {
-                        setSelectedCase(mockCases[0]);
-                        setView('caseDetail');
-                    }}
-                    className="cursor-pointer group"
-                  >
-                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-200 transition-transform group-active:scale-[0.98]">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16 blur-3xl text-blue-500 group-hover:bg-blue-400/20 transition-colors"></div>
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-center mb-6">
-                          <span className="px-4 py-1.5 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider">Active Case</span>
-                          <span className="text-slate-400 text-xs">Started Mar 12</span>
-                        </div>
-                        <h3 className="text-2xl font-semibold mb-2">ACL Reconstruction</h3>
-                        <p className="text-slate-400 text-sm mb-6">Pre-Surgery Assessment</p>
-                        
-                        {/* Progress Indicator */}
-                        <div className="space-y-3">
-                          <div className="flex justify-between text-xs font-medium">
-                            <span className="text-blue-400">Phase 2 of 5</span>
-                            <span>40% Completed</span>
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-40">
+              <Container>
+                {activeTab === 'home' && (
+                  <div className="space-y-12">
+                    {/* Active Case Card */}
+                    <motion.section
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      onClick={() => {
+                          setSelectedCase(mockCases[0]);
+                          setView('caseDetail');
+                      }}
+                      className="cursor-pointer group"
+                    >
+                      <Card className="bg-slate-900 border-none overflow-hidden group-active:scale-[0.98] transition-all p-10 relative">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl transition-colors"></div>
+                        <div className="relative z-10">
+                          <div className="flex justify-between items-center mb-10">
+                            <Badge variant="blue">Active Case</Badge>
+                            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Started Mar 12</span>
                           </div>
-                          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: "40%" }}
-                              transition={{ duration: 1.5, delay: 0.5 }}
-                              className="h-full bg-blue-500" 
+                          <h3 className="text-3xl font-black text-white mb-3 tracking-tight leading-tight">ACL Reconstruction</h3>
+                          <p className="text-slate-400 font-medium mb-10">Pre-Surgery Assessment</p>
+                          
+                          {/* Progress Indicator */}
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-end">
+                              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Phase 2 of 5</p>
+                              <p className="text-sm font-black text-white">40% Completed</p>
+                            </div>
+                            <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: "40%" }}
+                                transition={{ duration: 1.5, delay: 0.5 }}
+                                className="h-full bg-primary shadow-[0_0_15px_rgba(37,99,235,0.4)]" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.section>
+
+                    <div className="space-y-6">
+                      <SectionTitle title="Care Specialist" />
+                      <Card onClick={() => setView('doctorProfile')} className="p-8">
+                        <div className="flex items-center gap-6 mb-8">
+                          <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-50 shadow-soft">
+                            <img 
+                              src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
+                              alt="Dr. Sarah Mitchell" 
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
                             />
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.section>
-
-                  {/* Assigned Doctor Card */}
-                  <motion.section
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    onClick={() => setView('doctorProfile')}
-                    className="cursor-pointer group"
-                  >
-                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 group-hover:shadow-md transition-all">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0">
-                          <img 
-                            src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
-                            alt="Dr. Sarah Mitchell" 
-                            className="w-full h-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-slate-900">Dr. Sarah Mitchell</h4>
-                          <p className="text-slate-500 text-sm">Orthopedic Surgeon</p>
-                          <div className="flex items-center gap-1 mt-1 text-blue-600 bg-blue-50 w-fit px-2 py-0.5 rounded-lg">
-                            <ShieldCheck className="w-3 h-3" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider italic">Certified Extraordinaire</span>
+                          <div className="flex-1">
+                            <h4 className="text-xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h4>
+                            <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Orthopedic Surgeon</p>
+                            <div className="mt-2">
+                              <Badge variant="emerald">Certified Specialist</Badge>
+                            </div>
                           </div>
                         </div>
-                        <button className="ml-auto p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                          <MoreHorizontal className="w-5 h-5 text-slate-400" />
-                        </button>
-                      </div>
-                      <div className="flex gap-3">
-                        <button className="flex-1 bg-slate-50 text-slate-900 p-4 rounded-2xl font-semibold text-sm hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                          Reschedule
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setSelectedCase(mockCases[0]);
-                            setView('chat');
-                          }}
-                          className="flex-1 bg-blue-600 text-white p-4 rounded-2xl font-semibold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center justify-center gap-2"
-                        >
-                           <MessageCircle className="w-4 h-4" />
-                           Chat Now
-                        </button>
-                      </div>
+                        <div className="flex gap-4">
+                          <Button variant="ghost" className="flex-1 py-4 border-slate-100" onClick={(e) => { e.stopPropagation(); }}>
+                            <Calendar className="w-4 h-4" />
+                            Schedule
+                          </Button>
+                          <Button 
+                            variant="primary"
+                            className="flex-1 py-4"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCase(mockCases[0]);
+                              setView('chat');
+                            }}
+                          >
+                             <MessageSquare className="w-4 h-4" />
+                             Chat now
+                          </Button>
+                        </div>
+                      </Card>
                     </div>
-                  </motion.section>
 
-                  {/* Quick Actions Grid */}
-                  <motion.section
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Quick Actions</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button 
-                        className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-4 text-left active:scale-[0.98] transition-transform"
-                        id="book-appointment-btn"
-                      >
-                        <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-indigo-600" />
-                        </div>
-                        <span className="font-bold text-slate-900 text-sm">Book<br/>Appointment</span>
-                      </button>
-                      <button 
-                        onClick={() => setView('uploadReport')}
-                        className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-4 text-left active:scale-[0.98] transition-transform"
-                        id="upload-report-btn"
-                      >
-                        <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center">
-                          <Upload className="w-5 h-5 text-teal-600" />
-                        </div>
-                        <span className="font-bold text-slate-900 text-sm">Upload<br/>Medical Report</span>
-                      </button>
+                    <div className="space-y-6 pb-12">
+                      <SectionTitle title="Quick Actions" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <Card 
+                          onClick={() => setView('booking')}
+                          className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group"
+                        >
+                          <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Calendar className="w-6 h-6 text-indigo-600" />
+                          </div>
+                          <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Book<br/>Specialist</span>
+                        </Card>
+                        <Card 
+                          onClick={() => setView('uploadReport')}
+                          className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group"
+                        >
+                          <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Upload className="w-6 h-6 text-teal-600" />
+                          </div>
+                          <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Upload<br/>Records</span>
+                        </Card>
+                      </div>
                     </div>
-                  </motion.section>
-                </>
-              )}
+                  </div>
+                )}
 
               {activeTab === 'reports' && (
-                <div className="space-y-6">
-                  <div className="mb-2">
-                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Your Applications</h3>
-                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <div className="space-y-10">
+                  <div className="space-y-6">
+                    <SectionTitle title="Medical Applications" />
+                    <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
                       {['all', 'Pending', 'Assigned', 'In Progress'].map((filter) => (
                         <button
                           key={filter}
                           onClick={() => setCaseFilter(filter)}
-                          className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                          className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
                             caseFilter === filter 
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
-                            : 'bg-white text-slate-500 border border-slate-100 hover:border-slate-200'
+                            ? 'bg-primary border-primary text-white shadow-primary' 
+                            : 'bg-white text-content-muted border-slate-100 hover:border-slate-200'
                           }`}
                         >
-                          {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                          {filter}
                         </button>
                       ))}
                     </div>
@@ -1429,114 +1884,216 @@ export default function App() {
                             setSelectedCase(item as any);
                             setView('caseDetail');
                         }}
-                        className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-4 group hover:shadow-md transition-all active:scale-[0.99] cursor-pointer"
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{item.type}</span>
-                            <h4 className="font-bold text-slate-900 text-lg">{item.title}</h4>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            item.status === 'In Progress' ? 'bg-blue-50 text-blue-600' :
-                            item.status === 'Assigned' ? 'bg-teal-50 text-teal-600' :
-                            'bg-amber-50 text-amber-600'
-                          }`}>
-                            {item.status}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-50">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
-                              <User className="w-3 h-3 text-slate-400" />
+                        <Card className="p-8 group hover:border-primary transition-all">
+                          <div className="flex justify-between items-start mb-8">
+                            <div className="space-y-1.5">
+                              <Badge variant="blue">{item.type}</Badge>
+                              <h4 className="text-xl font-black text-slate-900 tracking-tight leading-tight">{item.title}</h4>
                             </div>
-                            <span className="text-xs text-slate-500 font-medium">{item.doctor}</span>
+                            <Badge variant={
+                              item.status === 'In Progress' ? 'blue' :
+                              item.status === 'Assigned' ? 'emerald' :
+                              'amber'
+                            }>
+                              {item.status}
+                            </Badge>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-400">{item.date}</span>
-                        </div>
+                          
+                          <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                                <User className="w-4 h-4 text-content-muted" />
+                              </div>
+                              <span className="text-[10px] font-black text-content-secondary uppercase tracking-widest">{item.doctor}</span>
+                            </div>
+                            <span className="text-[10px] font-black text-content-muted uppercase tracking-widest">{item.date}</span>
+                          </div>
+                        </Card>
                       </motion.div>
                     ))}
                   </div>
 
                   {mockCases.filter(c => caseFilter === 'all' || c.status === caseFilter).length === 0 && (
-                    <div className="py-20 text-center flex flex-col items-center gap-4">
-                      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300">
-                        <FileText className="w-8 h-8" />
+                    <div className="py-32 text-center flex flex-col items-center gap-6">
+                      <div className="w-24 h-24 bg-white rounded-5xl shadow-soft flex items-center justify-center text-slate-200 border border-slate-50">
+                        <FileText className="w-10 h-10" />
                       </div>
-                      <p className="text-slate-400 font-medium">No results for this filter.</p>
+                      <p className="text-xs font-black text-content-muted uppercase tracking-[0.2em]">No applications found</p>
                     </div>
                   )}
                 </div>
               )}
 
               {activeTab === 'calendar' && (
-                <div className="py-20 text-center flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-300">
-                    <Calendar className="w-10 h-10" />
+                <div className="py-32 text-center flex flex-col items-center gap-8">
+                  <div className="w-32 h-32 bg-white rounded-5xl shadow-strong flex items-center justify-center text-primary relative">
+                    <div className="absolute inset-0 rounded-5xl border-2 border-primary/20 animate-ping opacity-20" />
+                    <Calendar className="w-14 h-14" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">Your Care Timeline</h3>
-                  <p className="text-slate-500 max-w-xs">Follow-ups and therapy sessions will appear here once scheduled.</p>
+                  <div className="space-y-4">
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Care Journey</h3>
+                    <p className="text-content-secondary max-w-xs mx-auto font-medium leading-relaxed">
+                      Your upcoming milestones and therapy sessions will appear here once your plan is activated.
+                    </p>
+                  </div>
+                  <Button variant="secondary" className="w-auto px-10 py-4 shadow-soft" onClick={() => setView('booking')}>
+                    Explore Slots
+                  </Button>
                 </div>
               )}
 
               {activeTab === 'profile' && (
-                <div className="py-20 text-center flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
-                    <User className="w-10 h-10" />
+                <div className="space-y-12 pb-12">
+                  {/* User Profile Card */}
+                  <Card className="p-10 flex flex-col items-center text-center relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+                    <div className="w-28 h-28 bg-slate-50 rounded-4xl flex items-center justify-center text-content-muted mb-6 border-4 border-white shadow-strong relative group">
+                      <User className="w-12 h-12 group-hover:scale-110 transition-transform" />
+                      <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center border-4 border-white shadow-primary">
+                        <Settings className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Krishna Dhall</h3>
+                    <p className="text-content-muted text-[10px] font-black uppercase tracking-[0.2em] mb-8">Patient ID: #PAT-2024-X</p>
+                    
+                    <div className="grid grid-cols-3 gap-4 w-full py-8 border-y border-slate-50 mb-8">
+                      <div>
+                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Age</p>
+                        <p className="font-extrabold text-slate-900">28</p>
+                      </div>
+                      <div className="border-x border-slate-50">
+                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Weight</p>
+                        <p className="font-extrabold text-slate-900">72kg</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Blood</p>
+                        <p className="font-extrabold text-red-500">O+</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 w-full">
+                      <Button 
+                        variant="primary"
+                        onClick={() => setView('payment')}
+                        className="py-5 bg-slate-900 hover:bg-slate-800 border-none"
+                      >
+                        <ShieldCheck className="w-5 h-5 text-blue-400" />
+                        Upgrade to Premium
+                      </Button>
+                      <Button 
+                        variant="ghost"
+                        onClick={() => setView('doctorDashboard')}
+                        className="py-5 bg-blue-50 text-primary hover:bg-blue-100"
+                      >
+                        <Stethoscope className="w-5 h-5" />
+                        Doctor Portal Access
+                      </Button>
+                    </div>
+                  </Card>
+
+                  {/* Medical History Section */}
+                  <div className="space-y-6">
+                    <SectionTitle title="Vital Information" />
+                    <div className="space-y-3">
+                      {[
+                        { icon: Heart, label: 'Allergies', value: 'Peanuts, Penicillin', color: 'text-red-500', bg: 'bg-red-50' },
+                        { icon: Stethoscope, label: 'Medications', value: 'Ibuprofen (PRN)', color: 'text-blue-500', bg: 'bg-blue-50' },
+                        { icon: Info, label: 'History', value: 'Appendectomy (2018)', color: 'text-amber-500', bg: 'bg-amber-50' }
+                      ].map((item, i) => (
+                        <Card key={i} className="p-6 flex items-center gap-6 group hover:border-primary/20 transition-all">
+                          <div className={`w-14 h-14 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
+                            <item.icon className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">{item.label}</p>
+                            <p className="text-base font-black text-slate-900 tracking-tight">{item.value}</p>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">Patient Profile</h3>
-                  <p className="text-slate-500 mb-8">Manage your account settings and medical history.</p>
-                  <button 
-                    onClick={() => setView('splash')}
-                    className="text-red-500 font-bold hover:underline"
-                  >
-                    Logout Demo
-                  </button>
+
+                  {/* Settings Menu */}
+                  <div className="space-y-6">
+                    <SectionTitle title="Account Settings" />
+                    <Card className="overflow-hidden p-0">
+                      {[
+                        { icon: Bell, label: 'Notifications', desc: 'Push, Email, SMS' },
+                        { icon: ShieldCheck, label: 'Security & Privacy', desc: 'Biometric, Password' },
+                        { icon: CreditCard, label: 'Billing History', desc: 'Manage payments' },
+                        { icon: MessageCircle, label: 'Help & Support', desc: 'Contact care team' },
+                        { icon: LogOut, label: 'Logout', desc: 'End current session', danger: true }
+                      ].map((item, i, arr) => (
+                        <button 
+                          key={i} 
+                          onClick={() => item.danger && setView('splash')}
+                          className={`w-full p-6 flex items-center gap-5 hover:bg-slate-50 transition-colors text-left group ${i !== arr.length - 1 ? 'border-b border-slate-50' : ''}`}
+                        >
+                          <div className={`p-4 rounded-2xl ${item.danger ? 'bg-red-50 text-red-500 group-hover:bg-red-500 group-hover:text-white' : 'bg-slate-50 text-content-muted'} transition-all`}>
+                            <item.icon className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className={`font-black text-base tracking-tight ${item.danger ? 'text-red-500' : 'text-slate-900'}`}>{item.label}</p>
+                            <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">{item.desc}</p>
+                          </div>
+                          <ChevronRight className={`w-5 h-5 ${item.danger ? 'text-red-300' : 'text-slate-200'} group-hover:translate-x-1 transition-transform`} />
+                        </button>
+                      ))}
+                    </Card>
+                  </div>
+
+                  <div className="text-center pt-8">
+                     <p className="text-[10px] text-slate-200 font-black uppercase tracking-[0.4em]">SurgiBot v2.4.0</p>
+                  </div>
                 </div>
               )}
-            </div>
+            </Container>
+          </div>
 
-            {/* Floating Action Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setView('newCase')}
-              className="fixed bottom-28 right-6 w-16 h-16 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center group z-20"
-              id="new-case-fab"
-            >
-              <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" />
-            </motion.button>
+          {/* Floating Action Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setView('newCase')}
+            className="fixed bottom-32 right-8 w-20 h-20 bg-slate-900 text-white rounded-4xl shadow-strong flex items-center justify-center group z-30"
+          >
+            <Plus className="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 ease-out" />
+          </motion.button>
 
-            {/* Bottom Tab Bar */}
-            <div className="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 py-4 pb-8 flex justify-between items-center z-10 shadow-[0_-8px_30px_rgba(0,0,0,0.02)]">
-              {[
-                { id: 'home', icon: Home, label: 'Home' },
-                { id: 'calendar', icon: Calendar, label: 'Care' },
-                { id: 'reports', icon: FileText, label: 'Files' },
-                { id: 'profile', icon: User, label: 'Menu' },
-              ].map((tab) => (
+          {/* Bottom Tab Bar */}
+          <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100 px-8 py-6 pb-10 flex justify-between items-center z-40 shadow-strong">
+            {[
+              { id: 'home', icon: Home, label: 'Home' },
+              { id: 'calendar', icon: Calendar, label: 'Care' },
+              { id: 'reports', icon: FileText, label: 'Docs' },
+              { id: 'profile', icon: User, label: 'Menu' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className="flex flex-col items-center gap-1 group relative"
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className="flex flex-col items-center gap-2 group relative min-w-[64px]"
                 >
-                  <div className={`p-2 rounded-xl transition-all duration-300 ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'text-slate-400 group-hover:bg-slate-50'}`}>
+                  <div className={`p-3 rounded-2xl transition-all duration-500 ease-out ${isActive ? 'bg-primary text-white shadow-primary scale-110' : 'text-content-muted hover:bg-slate-50'}`}>
                     <tab.icon className="w-6 h-6 shrink-0" />
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${activeTab === tab.id ? 'text-blue-600' : 'text-slate-400'}`}>
+                  <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${isActive ? 'text-primary' : 'text-content-muted'}`}>
                     {tab.label}
                   </span>
-                  {activeTab === tab.id && (
+                  {isActive && (
                     <motion.div 
                        layoutId="tab-underline"
-                       className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full"
+                       className="absolute -bottom-2 w-1.5 h-1.5 bg-primary rounded-full"
                     />
                   )}
                 </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
       </AnimatePresence>
 
       {/* Background Decorative Blurs */}
