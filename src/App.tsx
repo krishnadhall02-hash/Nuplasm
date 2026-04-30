@@ -4,11 +4,12 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2, Download, Share2, Settings, LogOut, Heart, Info, CreditCard, Star, Camera, Check, File } from 'lucide-react';
+import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2, Download, Share2, Settings, LogOut, Heart, Info, CreditCard, Star, Camera, Check, File, Key, Fingerprint, LogOut as LogOutIcon } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, KeyboardEvent } from 'react';
 import { Button, Card, Header, Container, Badge, SectionTitle, FloatingBanner } from './components/design-system';
+import { supabase } from './lib/supabase';
 
-type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport' | 'booking' | 'payment' | 'receipt' | 'notifications' | 'doctorDashboard';
+type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport' | 'booking' | 'payment' | 'receipt' | 'notifications' | 'doctorDashboard' | 'settings' | 'notifSettings' | 'securitySettings' | 'billingHistory' | 'helpSupport' | 'passwordChange';
 
 export default function App() {
   const [view, setView] = useState<AppView>('splash');
@@ -34,6 +35,57 @@ export default function App() {
     { id: 4, title: 'Message from Care Team', message: 'We have updated your post-op recovery protocol.', time: 'Yesterday', read: true, type: 'message' },
   ]);
   const [doctorTab, setDoctorTab] = useState<'pre-op' | 'active' | 'post-op'>('active');
+  const [settingsToggles, setSettingsToggles] = useState({
+    push: true,
+    email: false,
+    sms: true,
+    biometric: true,
+    marketing: false
+  });
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [supportMessage, setSupportMessage] = useState('');
+  const [supportTickets, setSupportTickets] = useState([
+    { id: 'TKT-101', subject: 'Billing Issue', status: 'Open', date: '2 hours ago' },
+    { id: 'TKT-098', subject: 'Video Call Quality', status: 'Resolved', date: '2 days ago' }
+  ]);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [supportChat, setSupportChat] = useState([
+    { id: 1, text: "Hi! How can we help you today?", isBot: true, time: '10:00 AM' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [billingFilter, setBillingFilter] = useState<'all' | 'paid' | 'pending'>('all');
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingData, setBillingData] = useState([
+    { id: 'SUR-77291-B', date: 'Apr 28, 2024', amount: '$499.00', status: 'Paid', plan: 'Elite Recovery', receipt_url: '#' },
+    { id: 'SUR-76120-A', date: 'Mar 15, 2024', amount: '$199.00', status: 'Paid', plan: 'Essential Care', receipt_url: '#' },
+    { id: 'CON-12093-X', date: 'Jan 10, 2024', amount: '$49.00', status: 'Paid', plan: 'Initial Consult', receipt_url: '#' },
+    { id: 'PAY-WAI-992', date: 'May 02, 2024', amount: '$299.00', status: 'Pending', plan: 'Post-Op Rehab', receipt_url: null }
+  ]);
+
+  useEffect(() => {
+    if (view === 'billingHistory') {
+      const fetchBilling = async () => {
+        setBillingLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('payments')
+            .select('*')
+            .order('date', { ascending: false });
+          
+          if (!error && data && data.length > 0) {
+            setBillingData(data);
+          }
+        } catch (e) {
+          console.error('Failed to fetch billing:', e);
+        } finally {
+          setBillingLoading(false);
+        }
+      };
+      fetchBilling();
+    }
+  }, [view]);
 
   const mockPatients = [
     { id: 'p1', name: 'James Wilson', procedure: 'ACL Reconstruction', status: 'pre-op', risk: 'Low', date: 'May 14', recovery: 0, avatar: 'JW' },
@@ -740,6 +792,425 @@ export default function App() {
               Care package is now activated.<br/>
               Ready for superior recovery.
             </p>
+          </motion.div>
+        )}
+
+        {view === 'notifSettings' && (
+          <motion.div
+            key="notifSettings"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Notifications" onBack={() => setView('dashboard')} />
+            <Container className="space-y-8 pt-8">
+              <div className="space-y-4">
+                <SectionTitle title="System Alerts" />
+                <Card className="p-0 overflow-hidden">
+                  {[
+                    { key: 'push', label: 'Push Notifications', desc: 'Real-time updates on your phone' },
+                    { key: 'sms', label: 'SMS Messages', desc: 'Critical alerts via text' },
+                    { key: 'email', label: 'Email Reports', desc: 'Weekly health summaries' }
+                  ].map((item) => (
+                    <div key={item.key} className="p-8 flex items-center justify-between border-b border-slate-50 last:border-none">
+                      <div className="pr-4">
+                        <p className="font-black text-slate-900 tracking-tight">{item.label}</p>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">{item.desc}</p>
+                      </div>
+                      <button 
+                        onClick={() => setSettingsToggles(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof settingsToggles] }))}
+                        className={`w-14 h-8 rounded-full transition-all relative ${settingsToggles[item.key as keyof typeof settingsToggles] ? 'bg-primary' : 'bg-slate-200'}`}
+                      >
+                        <motion.div 
+                          animate={{ x: settingsToggles[item.key as keyof typeof settingsToggles] ? 24 : 4 }}
+                          className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-sm"
+                        />
+                      </button>
+                    </div>
+                  ))}
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <SectionTitle title="Marketing" />
+                <Card className="p-8 flex items-center justify-between">
+                   <div>
+                    <p className="font-black text-slate-900 tracking-tight">Promotional Updates</p>
+                    <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">New features and care packages</p>
+                  </div>
+                  <button 
+                    onClick={() => setSettingsToggles(prev => ({ ...prev, marketing: !prev.marketing }))}
+                    className={`w-14 h-8 rounded-full transition-all relative ${settingsToggles.marketing ? 'bg-primary' : 'bg-slate-200'}`}
+                  >
+                    <motion.div 
+                      animate={{ x: settingsToggles.marketing ? 24 : 4 }}
+                      className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-sm"
+                    />
+                  </button>
+                </Card>
+              </div>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'securitySettings' && (
+          <motion.div
+            key="securitySettings"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Security" onBack={() => setView('dashboard')} />
+            <Container className="space-y-8 pt-8">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mx-auto mb-6 shadow-soft">
+                  <ShieldCheck className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Safe & Secure</h3>
+                <p className="text-content-secondary font-medium mt-2">Manage your data protection</p>
+              </div>
+
+              <div className="space-y-6">
+                <Card className="p-0 overflow-hidden">
+                  <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                    <div>
+                      <p className="font-black text-slate-900 tracking-tight">Biometric Login</p>
+                      <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Face ID or Touch ID</p>
+                    </div>
+                    <button 
+                      onClick={() => setSettingsToggles(prev => ({ ...prev, biometric: !prev.biometric }))}
+                      className={`w-14 h-8 rounded-full transition-all relative ${settingsToggles.biometric ? 'bg-primary' : 'bg-slate-200'}`}
+                    >
+                      <motion.div 
+                        animate={{ x: settingsToggles.biometric ? 24 : 4 }}
+                        className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-sm"
+                      />
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => setView('passwordChange')}
+                    className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                  >
+                    <div>
+                      <p className="font-black text-slate-900 tracking-tight">Change Password</p>
+                      <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Update your account password</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-300" />
+                  </button>
+                </Card>
+
+                <Card className="p-0 overflow-hidden">
+                  <button 
+                    onClick={() => setShowLogoutConfirm(true)}
+                    className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                        <LogOut className="w-6 h-6 text-red-500" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-black text-slate-900 group-hover:text-red-600 transition-colors tracking-tight">Sign Out</p>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">End current session</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-300" />
+                  </button>
+                </Card>
+
+                <Card className="p-8 border-red-50">
+                  <h4 className="font-black text-red-500 uppercase text-[10px] tracking-widest mb-4">Privacy Actions</h4>
+                  <div className="space-y-4">
+                    <Button variant="ghost" className="bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all py-4">
+                      Clear Cache & Data
+                    </Button>
+                    <Button variant="ghost" className="text-content-muted text-[10px] font-black uppercase tracking-widest">
+                      Request My Data Record
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'passwordChange' && (
+          <motion.div
+            key="passwordChange"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Change Password" onBack={() => setView('securitySettings')} />
+            <Container className="space-y-8 pt-8">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                  <Key className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">Update Authentication</h3>
+                <p className="text-content-secondary font-medium mt-1">Keep your account secure</p>
+              </div>
+
+              <Card className="p-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-content-muted leading-none">New Password</label>
+                  <input 
+                    type="password"
+                    placeholder="Enter new password"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6 text-sm font-bold focus:border-primary focus:ring-0 transition-all outline-none"
+                    value={passwordForm.new}
+                    onChange={(e) => setPasswordForm(prev => ({ ...prev, new: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-content-muted leading-none">Confirm New Password</label>
+                  <input 
+                    type="password"
+                    placeholder="Confirm new password"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6 text-sm font-bold focus:border-primary focus:ring-0 transition-all outline-none"
+                    value={passwordForm.confirm}
+                    onChange={(e) => setPasswordForm(prev => ({ ...prev, confirm: e.target.value }))}
+                  />
+                </div>
+
+                {passwordError && (
+                  <p className="text-xs font-bold text-red-500 bg-red-50 p-4 rounded-xl text-center">
+                    {passwordError}
+                  </p>
+                )}
+
+                <Button 
+                  onClick={async () => {
+                    if (!passwordForm.new || passwordForm.new !== passwordForm.confirm) {
+                      setPasswordError('Passwords do not match');
+                      return;
+                    }
+                    if (passwordForm.new.length < 6) {
+                      setPasswordError('Password must be at least 6 characters');
+                      return;
+                    }
+                    
+                    setPasswordError('');
+                    const { error } = await supabase.auth.updateUser({ password: passwordForm.new });
+                    
+                    if (error) {
+                      setPasswordError(error.message);
+                    } else {
+                      alert('Password updated successfully');
+                      setView('securitySettings');
+                      setPasswordForm({ current: '', new: '', confirm: '' });
+                    }
+                  }}
+                  icon={ArrowRight}
+                >
+                  Update Password
+                </Button>
+              </Card>
+
+              <div className="bg-slate-50/50 p-6 rounded-3xl border border-dashed border-slate-200">
+                <div className="flex gap-4">
+                  <Info className="w-5 h-5 text-slate-400 shrink-0" />
+                  <p className="text-xs text-content-muted font-medium leading-relaxed">
+                    Once changed, you will be signed out from other active sessions for security purposes.
+                  </p>
+                </div>
+              </div>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'billingHistory' && (
+          <motion.div
+            key="billingHistory"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Billing" onBack={() => setView('dashboard')} />
+            <Container className="space-y-6 pt-8 pb-32">
+              <div className="flex bg-white p-1 rounded-3xl border border-slate-100 shadow-sm">
+                {(['all', 'paid', 'pending'] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setBillingFilter(f)}
+                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all ${billingFilter === f ? 'bg-primary text-white shadow-primary/20 shadow-lg' : 'text-content-muted hover:bg-slate-50'}`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <SectionTitle title="Transactions" />
+                {billingLoading && <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />}
+              </div>
+
+              <div className="space-y-4">
+                {billingData
+                  .filter(b => billingFilter === 'all' || b.status.toLowerCase() === billingFilter.toLowerCase())
+                  .map((bill) => (
+                    <Card key={bill.id} className="p-8 group hover:border-primary transition-all">
+                      <div className="flex justify-between items-start mb-6">
+                        <div>
+                          <p className="text-lg font-black text-slate-900 tracking-tight leading-none">{bill.amount}</p>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-2">{bill.plan}</p>
+                        </div>
+                        <Badge variant={bill.status === 'Paid' ? 'emerald' : 'amber'}>{bill.status}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                        <div>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-widest leading-none mb-1">Receipt ID</p>
+                          <p className="text-xs font-bold text-slate-900">{bill.id}</p>
+                          <p className="text-[10px] font-medium text-slate-400 mt-1">{bill.date}</p>
+                        </div>
+                        {bill.status === 'Paid' && (
+                          <button 
+                            onClick={() => alert(`Downloading receipt ${bill.id}...`)}
+                            className="p-4 bg-blue-50 text-primary rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
+                          >
+                            <Download className="w-5 h-5" />
+                          </button>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                
+                {billingData.filter(b => billingFilter === 'all' || b.status.toLowerCase() === billingFilter.toLowerCase()).length === 0 && !billingLoading && (
+                  <div className="text-center py-20 bg-white rounded-4xl border border-dashed border-slate-200">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <p className="text-sm font-bold text-slate-400">No transactions found</p>
+                  </div>
+                )}
+              </div>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'helpSupport' && (
+          <motion.div
+            key="helpSupport"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Help & Support" onBack={() => setView('settings')} />
+            <div className="flex-1 overflow-y-auto pb-32">
+              <Container className="pt-8 space-y-8">
+                <div className="text-center mb-8">
+                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-50">
+                    <MessageCircle className="w-10 h-10 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">How can we help?</h3>
+                  <p className="text-content-secondary font-medium mt-2">Our team typically responds in under 1 hour</p>
+                </div>
+
+                <div className="space-y-4">
+                  <SectionTitle title="Frequently Asked Questions" />
+                  <div className="space-y-3">
+                    {[
+                      { q: "How do I book a consultation?", a: "Go to the Dashboard, select a doctor, and click 'Book Appointment'." },
+                      { q: "Are the video calls encrypted?", a: "Yes, all medical consultations use end-to-end industry standard encryption." },
+                      { q: "How can I download my reports?", a: "Navigate to 'Cases', select your case, and tap the download icon on any report." },
+                      { q: "What should I do in an emergency?", a: "If you are experiencing a medical emergency, please call your local emergency services immediately." }
+                    ].map((faq, i) => (
+                      <Card key={i} className="p-0 overflow-hidden">
+                        <button 
+                          onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                          className="w-full p-6 flex items-center justify-between text-left"
+                        >
+                          <p className="text-sm font-bold text-slate-900 pr-4">{faq.q}</p>
+                          <ChevronRight className={`w-5 h-5 text-slate-300 transition-transform ${activeFaq === i ? 'rotate-90' : ''}`} />
+                        </button>
+                        <AnimatePresence>
+                          {activeFaq === i && (
+                            <motion.div 
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="px-6 pb-6"
+                            >
+                              <p className="text-sm text-content-secondary leading-relaxed font-medium">
+                                {faq.a}
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <SectionTitle title="Direct Support" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Card className="p-6 flex flex-col items-center text-center gap-4 hover:border-primary transition-all group">
+                      <div className="p-4 bg-primary/10 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                        <MessageSquare className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Live Chat</span>
+                    </Card>
+                    <Card className="p-6 flex flex-col items-center text-center gap-4 hover:border-primary transition-all group">
+                      <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                        <Phone className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Call Now</span>
+                    </Card>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <SectionTitle title="Open a Ticket" />
+                  <Card className="p-8 space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-content-muted">Issue description</label>
+                      <textarea 
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6 text-sm font-medium focus:border-primary focus:ring-0 outline-none min-h-[120px] resize-none"
+                        placeholder="Tell us what's happening..."
+                        value={supportMessage}
+                        onChange={(e) => setSupportMessage(e.target.value)}
+                      />
+                    </div>
+                    <Button 
+                      onClick={() => {
+                        if (supportMessage.trim()) {
+                          alert('Ticket submitted successfully! Ref: #' + Math.floor(Math.random() * 10000));
+                          setSupportMessage('');
+                        }
+                      }}
+                      icon={Send}
+                    >
+                      Submit Ticket
+                    </Button>
+                  </Card>
+                </div>
+
+                <div className="space-y-4">
+                  <SectionTitle title="Ticket History" />
+                  <div className="space-y-3">
+                    {supportTickets.map(ticket => (
+                      <Card key={ticket.id} className="p-6 flex items-center justify-between hover:border-primary transition-all">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-black text-slate-900">{ticket.subject}</p>
+                            <Badge variant={ticket.status === 'Open' ? 'amber' : 'emerald'}>{ticket.status}</Badge>
+                          </div>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{ticket.id} • {ticket.date}</p>
+                        </div>
+                        <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-primary transition-colors">
+                          <MessageSquare className="w-5 h-5" />
+                        </button>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </Container>
+            </div>
           </motion.div>
         )}
 
@@ -2019,15 +2490,15 @@ export default function App() {
                     <SectionTitle title="Account Settings" />
                     <Card className="overflow-hidden p-0">
                       {[
-                        { icon: Bell, label: 'Notifications', desc: 'Push, Email, SMS' },
-                        { icon: ShieldCheck, label: 'Security & Privacy', desc: 'Biometric, Password' },
-                        { icon: CreditCard, label: 'Billing History', desc: 'Manage payments' },
-                        { icon: MessageCircle, label: 'Help & Support', desc: 'Contact care team' },
-                        { icon: LogOut, label: 'Logout', desc: 'End current session', danger: true }
+                        { icon: Bell, label: 'Notifications', desc: 'Push, Email, SMS', action: () => setView('notifSettings') },
+                        { icon: ShieldCheck, label: 'Security & Privacy', desc: 'Biometric, Password', action: () => setView('securitySettings') },
+                        { icon: CreditCard, label: 'Billing History', desc: 'Manage payments', action: () => setView('billingHistory') },
+                        { icon: MessageCircle, label: 'Help & Support', desc: 'Contact care team', action: () => setView('helpSupport') },
+                        { icon: LogOut, label: 'Logout', desc: 'End current session', danger: true, action: () => setShowLogoutConfirm(true) }
                       ].map((item, i, arr) => (
                         <button 
                           key={i} 
-                          onClick={() => item.danger && setView('splash')}
+                          onClick={item.action}
                           className={`w-full p-6 flex items-center gap-5 hover:bg-slate-50 transition-colors text-left group ${i !== arr.length - 1 ? 'border-b border-slate-50' : ''}`}
                         >
                           <div className={`p-4 rounded-2xl ${item.danger ? 'bg-red-50 text-red-500 group-hover:bg-red-500 group-hover:text-white' : 'bg-slate-50 text-content-muted'} transition-all`}>
@@ -2094,6 +2565,53 @@ export default function App() {
           </div>
         </motion.div>
       )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutConfirm(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-sm bg-white rounded-[40px] p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <LogOut className="w-10 h-10 text-red-500" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Sign Out?</h3>
+                <p className="text-content-secondary font-medium mb-8">Are you sure you want to log out of your account?</p>
+                
+                <div className="space-y-3">
+                  <Button 
+                    className="bg-red-500 hover:bg-red-600 border-red-500 shadow-red-200 w-full"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      setShowLogoutConfirm(false);
+                      setView('splash');
+                    }}
+                  >
+                    Yes, Sign Out
+                  </Button>
+                  <button 
+                    onClick={() => setShowLogoutConfirm(false)}
+                    className="w-full py-4 text-sm font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
 
       {/* Background Decorative Blurs */}
