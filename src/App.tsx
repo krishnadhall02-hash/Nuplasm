@@ -74,7 +74,7 @@ export default function App() {
     ];
 
     return (
-      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-100 px-6 pb-8 pt-4 flex justify-between items-center z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-surface-card shadow-strong border-t border-slate-100/10 px-6 pb-8 pt-4 flex justify-between items-center z-50">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = view === tab.id || (tab.id === 'settings' && ['notifications', 'securitySettings', 'billingHistory', 'helpSupport'].includes(view));
@@ -84,10 +84,10 @@ export default function App() {
               onClick={() => setView(tab.id as any)}
               className="flex flex-col items-center gap-1 group"
             >
-              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'text-slate-400 group-hover:text-primary'}`}>
+              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-primary text-white shadow-primary scale-110' : 'text-content-muted group-hover:text-primary'}`}>
                 <Icon className="w-5 h-5" />
               </div>
-              <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-primary' : 'text-slate-400'}`}>
+              <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-primary' : 'text-content-muted'}`}>
                 {tab.label}
               </span>
             </button>
@@ -181,6 +181,19 @@ export default function App() {
     { id: '2', title: 'Cardiac Consultation', type: 'Cardiac', status: 'Assigned', date: 'Apr 02, 2024', doctor: 'Dr. James Wilson', description: 'Follow-up for reported chest tightness and fatigue. Pre-surgical cardiac clearance required.' },
     { id: '3', title: 'Neural Assessment', type: 'Neurology', status: 'Pending', date: 'Apr 25, 2024', doctor: 'Awaiting Match', description: 'Chronic migraine investigation and neuro-surgical evaluation of persistent ocular pressure.' },
   ];
+  const activeCase = {
+    title: "Pre-Surgery Assessment",
+    phase: "Phase 2 of 5",
+    progress: 40,
+    startDate: "Mar 12"
+  };
+
+  const doctor = {
+    name: "Dr. Sarah Mitchell",
+    specialization: "Orthopedic Surgeon",
+    certified: true
+  };
+
   const [chatHistory, setChatHistory] = useState([
     { id: 1, role: 'ai', text: "Hello Krishna! I'm Nuplasm AI, your personal care assistant. How can I help you with your recovery today?", time: '09:41' }
   ]);
@@ -272,23 +285,23 @@ export default function App() {
     {
       title: "Find the Right Surgeon Instantly",
       description: "Connect with board-certified specialists tailored to your specific surgical needs and location.",
-      icon: <Search className="w-12 h-12 text-blue-600" />,
-      color: "bg-blue-50",
-      accent: "text-blue-600"
+      icon: <Search className="w-12 h-12 text-primary" />,
+      color: "bg-primary/5",
+      accent: "text-primary"
     },
     {
       title: "AI-Powered Diagnosis & Matching",
       description: "Our advanced algorithms analyze your case to match you with surgeons who have the highest success rates.",
-      icon: <Brain className="w-12 h-12 text-indigo-600" />,
-      color: "bg-indigo-50",
-      accent: "text-indigo-600"
+      icon: <Brain className="w-12 h-12 text-secondary" />,
+      color: "bg-secondary/5",
+      accent: "text-secondary"
     },
     {
       title: "Video Consultation & Full Care",
       description: "Book virtual appointments and manage your entire recovery journey from the palm of your hand.",
-      icon: <Video className="w-12 h-12 text-teal-600" />,
-      color: "bg-teal-50",
-      accent: "text-teal-600"
+      icon: <Video className="w-12 h-12 text-primary" />,
+      color: "bg-primary/5",
+      accent: "text-primary"
     }
   ];
 
@@ -348,8 +361,8 @@ export default function App() {
               }}
               className="relative mb-8"
             >
-              <div className="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100/50">
-                <Stethoscope className="w-16 h-16 text-blue-600 drop-shadow-sm" strokeWidth={1.5} />
+              <div className="bg-primary/5 p-6 rounded-3xl shadow-sm border border-primary/10">
+                <Stethoscope className="w-16 h-16 text-primary drop-shadow-sm" strokeWidth={1.5} />
               </div>
               <motion.div
                 animate={{ 
@@ -361,7 +374,7 @@ export default function App() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="absolute inset-0 bg-blue-400 rounded-3xl -z-10 blur-xl"
+                className="absolute inset-0 bg-primary/20 rounded-3xl -z-10 blur-xl"
               />
             </motion.div>
 
@@ -392,7 +405,7 @@ export default function App() {
                   ease: "easeInOut",
                   repeat: Infinity
                 }}
-                className="absolute inset-0 bg-blue-600 rounded-full"
+                className="absolute inset-0 bg-primary rounded-full"
               />
             </div>
           </motion.div>
@@ -490,7 +503,7 @@ export default function App() {
           >
             <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full p-8 px-10">
               <div className="mb-12">
-                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mb-10 shadow-soft">
+                <div className="w-20 h-20 bg-primary/5 rounded-4xl flex items-center justify-center mb-10 shadow-soft">
                   <Stethoscope className="w-10 h-10 text-primary" />
                 </div>
                 <h2 className="text-4xl font-black text-content-primary mb-4 tracking-tight">Welcome</h2>
@@ -549,7 +562,7 @@ export default function App() {
 
             <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full p-8 text-center px-10">
               <div className="mb-12">
-                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mx-auto mb-10 shadow-soft">
+                <div className="w-20 h-20 bg-primary/5 rounded-4xl flex items-center justify-center mx-auto mb-10 shadow-soft">
                   <ShieldCheck className="w-10 h-10 text-primary" />
                 </div>
                 <h2 className="text-3xl font-black text-content-primary mb-4 tracking-tight">Security Code</h2>
@@ -569,7 +582,7 @@ export default function App() {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-12 h-16 text-center text-2xl font-black rounded-2xl border border-slate-100 bg-slate-50 focus:border-primary focus:bg-white focus:shadow-lg focus:shadow-blue-50 outline-none transition-all"
+                    className="w-12 h-16 text-center text-2xl font-black rounded-2xl border border-slate-100 bg-slate-50 focus:border-primary focus:bg-white focus:shadow-lg focus:shadow-primary/10 outline-none transition-all"
                   />
                 ))}
               </div>
@@ -613,7 +626,7 @@ export default function App() {
             className="flex-1 flex flex-col bg-surface-bg overflow-y-auto no-scrollbar"
           >
             {/* Doctor Header */}
-            <div className="p-8 pb-6 bg-white sticky top-0 z-30 border-b border-slate-100 shadow-soft">
+            <div className="p-8 pb-6 bg-surface-card sticky top-0 z-30 border-b border-slate-100/10 shadow-soft">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-5">
                   <div className="w-16 h-16 bg-primary rounded-4xl flex items-center justify-center text-white shadow-primary">
@@ -626,7 +639,7 @@ export default function App() {
                 </div>
                 <button 
                   onClick={() => setView('dashboard')}
-                  className="p-4 bg-slate-50 text-content-muted rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all border border-slate-100"
+                  className="p-4 bg-slate-50 text-content-muted rounded-2xl hover:bg-accent/10 hover:text-accent transition-all border border-slate-100"
                 >
                   <LogOut className="w-6 h-6" />
                 </button>
@@ -676,7 +689,7 @@ export default function App() {
                   >
                     <div className="flex items-start justify-between mb-8">
                       <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-slate-50 rounded-3xl flex items-center justify-center font-black text-primary border border-blue-50">
+                        <div className="w-14 h-14 bg-slate-50 rounded-3xl flex items-center justify-center font-black text-primary border border-primary/5">
                           {patient.avatar}
                         </div>
                         <div>
@@ -748,7 +761,7 @@ export default function App() {
               rightElement={
                 <button 
                   onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
-                  className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 px-4 py-2 rounded-full transition-all"
+                  className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/5 px-4 py-2 rounded-full transition-all"
                 >
                   Mark All
                 </button>
@@ -770,7 +783,7 @@ export default function App() {
                     className={`p-6 rounded-4xl border transition-all cursor-pointer relative group mb-3 last:mb-0 ${
                       notif.read 
                       ? 'bg-white/50 border-slate-100 opacity-60' 
-                      : 'bg-white border-blue-100 shadow-strong ring-1 ring-blue-50/50'
+                      : 'bg-white border-primary/10 shadow-strong ring-1 ring-primary/5'
                     }`}
                   >
                     {!notif.read && (
@@ -780,7 +793,7 @@ export default function App() {
                     <div className="flex gap-6">
                       <div className={`w-14 h-14 rounded-3xl flex items-center justify-center flex-shrink-0 ${
                         notif.type === 'calendar' ? 'bg-amber-50 text-amber-600' :
-                        notif.type === 'brain' ? 'bg-blue-50 text-blue-600' :
+                        notif.type === 'brain' ? 'bg-primary/5 text-primary' :
                         notif.type === 'activity' ? 'bg-emerald-50 text-emerald-600' :
                         'bg-purple-50 text-purple-600'
                       }`}>
@@ -823,7 +836,7 @@ export default function App() {
                   <Check className="w-10 h-10 text-white" strokeWidth={4} />
                 </div>
                 <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Payment Approved</h2>
-                <Badge variant="blue" className="bg-blue-500/20 text-blue-300 border-none">Receipt #SUR-77291-B</Badge>
+                <Badge variant="blue" className="bg-primary/20 text-blue-200 border-none">Receipt #SUR-77291-B</Badge>
               </div>
 
               {/* Receipt Details */}
@@ -885,7 +898,7 @@ export default function App() {
             className="flex-1 flex flex-col bg-surface-bg h-screen"
           >
             {/* Profile Header */}
-            <div className="p-8 pb-6 flex justify-between items-center bg-white/50 backdrop-blur-md sticky top-0 z-30">
+            <div className="p-8 pb-6 flex justify-between items-center bg-surface-card/50 backdrop-blur-md sticky top-0 z-30">
               <div>
                 <p className="text-sm font-medium text-content-secondary">Good Morning,</p>
                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">Krishna</h2>
@@ -902,7 +915,7 @@ export default function App() {
             <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
               <Container className="pt-4 space-y-8">
                 {/* Profile Card (Main Container) */}
-                <Card className="p-8 shadow-strong border-none bg-white relative overflow-hidden group">
+                <Card className="p-8 shadow-strong border-none bg-surface-card relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl transition-all group-hover:scale-110"></div>
                   
                   <div className="flex flex-col items-center mb-8">
@@ -1075,7 +1088,7 @@ export default function App() {
             <Header title="Security" onBack={() => setView('dashboard')} />
             <Container className="space-y-8 pt-8">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-blue-50 rounded-4xl flex items-center justify-center mx-auto mb-6 shadow-soft">
+                <div className="w-20 h-20 bg-primary/5 rounded-4xl flex items-center justify-center mx-auto mb-6 shadow-soft">
                   <ShieldCheck className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 tracking-tight">Safe & Secure</h3>
@@ -1117,25 +1130,23 @@ export default function App() {
                     className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                        <LogOut className="w-6 h-6 text-red-500" />
+                      <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <LogOut className="w-6 h-6 text-accent" />
                       </div>
                       <div className="text-left">
-                        <p className="font-black text-slate-900 group-hover:text-red-600 transition-colors tracking-tight">Sign Out</p>
-                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">End current session</p>
+                        <p className="font-black text-slate-900 group-hover:text-accent transition-colors tracking-tight">Sign Out</p>                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">End current session</p>
                       </div>
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
                   </button>
                 </Card>
 
-                <Card className="p-8 border-red-50">
-                  <h4 className="font-black text-red-500 uppercase text-[10px] tracking-widest mb-4">Privacy Actions</h4>
+                <Card className="p-8 border-accent/10">
+                  <h4 className="font-black text-accent uppercase text-[10px] tracking-widest mb-4">Privacy Actions</h4>
                   <div className="space-y-4">
-                    <Button variant="ghost" className="bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all py-4">
+                    <Button variant="ghost" className="bg-accent/10 text-accent hover:bg-accent hover:text-white transition-all py-4">
                       Clear Cache & Data
-                    </Button>
-                    <Button variant="ghost" className="text-content-muted text-[10px] font-black uppercase tracking-widest">
+                    </Button>                    <Button variant="ghost" className="text-content-muted text-[10px] font-black uppercase tracking-widest">
                       Request My Data Record
                     </Button>
                   </div>
@@ -1156,7 +1167,7 @@ export default function App() {
             <Header title="Change Password" onBack={() => setView('securitySettings')} />
             <Container className="space-y-8 pt-8">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                <div className="w-16 h-16 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-primary/10">
                   <Key className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">Update Authentication</h3>
@@ -1186,7 +1197,7 @@ export default function App() {
                 </div>
 
                 {passwordError && (
-                  <p className="text-xs font-bold text-red-500 bg-red-50 p-4 rounded-xl text-center">
+                  <p className="text-xs font-bold text-accent bg-accent/10 p-4 rounded-xl text-center">
                     {passwordError}
                   </p>
                 )}
@@ -1279,7 +1290,7 @@ export default function App() {
                         {bill.status === 'Paid' && (
                           <button 
                             onClick={() => alert(`Downloading receipt ${bill.id}...`)}
-                            className="p-4 bg-blue-50 text-primary rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
+                            className="p-4 bg-primary/5 text-primary rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
                           >
                             <Download className="w-5 h-5" />
                           </button>
@@ -1289,7 +1300,7 @@ export default function App() {
                   ))}
                 
                 {billingData.filter(b => billingFilter === 'all' || b.status.toLowerCase() === billingFilter.toLowerCase()).length === 0 && !billingLoading && (
-                  <div className="text-center py-20 bg-white rounded-4xl border border-dashed border-slate-200">
+                  <div className="text-center py-20 bg-surface-card rounded-4xl border border-dashed border-slate-200/50">
                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
                       <FileText className="w-8 h-8 text-slate-300" />
                     </div>
@@ -1319,7 +1330,7 @@ export default function App() {
                 ].map((doc, i) => (
                   <Card key={i} className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary font-black">
+                      <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary font-black">
                         {doc.avatar}
                       </div>
                       <div>
@@ -1346,7 +1357,7 @@ export default function App() {
           >
             <Header title="Patient Documents" onBack={() => setView('dashboard')} />
             <Container className="pt-8 space-y-6 pb-32">
-              <div className="bg-white p-6 rounded-4xl border border-slate-100 flex items-center justify-between">
+              <div className="bg-surface-card p-6 rounded-4xl border border-slate-100/10 flex items-center justify-between">
                 <div>
                   <h4 className="text-lg font-black text-slate-900 tracking-tight">Your Vault</h4>
                   <p className="text-[10px] font-black text-content-muted uppercase tracking-widest">End-to-end Encrypted</p>
@@ -1386,7 +1397,7 @@ export default function App() {
             <div className="flex-1 overflow-y-auto pb-32">
               <Container className="pt-8 space-y-8">
                 <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-50">
+                  <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/10">
                     <MessageCircle className="w-10 h-10 text-primary" />
                   </div>
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">How can we help?</h3>
@@ -1566,7 +1577,7 @@ export default function App() {
                       <ul className="space-y-5 mb-10">
                         {plan.features.map((feat, i) => (
                           <li key={i} className="flex items-center gap-4 text-content-secondary font-medium tracking-tight text-sm">
-                            <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <div className="w-6 h-6 rounded-full bg-primary/5 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                               <Check className="w-3.5 h-3.5 text-primary" strokeWidth={4} />
                             </div>
                             {feat}
@@ -1609,7 +1620,7 @@ export default function App() {
             </Container>
 
             {/* Bottom Sticky Action */}
-            <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-white/90 backdrop-blur-2xl border-t border-slate-100 z-40 shadow-strong flex flex-col gap-6">
+            <div className="fixed bottom-0 inset-x-0 p-8 pb-12 bg-surface-card/90 backdrop-blur-2xl border-t border-slate-100/10 z-40 shadow-strong flex flex-col gap-6">
               <div className="flex justify-center gap-6 text-[10px] font-black text-content-muted uppercase tracking-[0.3em]">
                 <span>Visa</span><span>Amex</span><span>Apple Pay</span>
               </div>
@@ -1775,7 +1786,7 @@ export default function App() {
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <SectionTitle title="Vault Contents" />
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">{uploadedFiles.length} Total</span>
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-3 py-1 rounded-full">{uploadedFiles.length} Total</span>
                 </div>
                 <AnimatePresence mode="popLayout">
                   {uploadedFiles.length === 0 ? (
@@ -1798,7 +1809,7 @@ export default function App() {
                           exit={{ opacity: 0, scale: 0.95 }}
                         >
                           <Card className="p-6 flex items-center gap-6 group hover:border-primary transition-all">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-soft ${file.type === 'pdf' ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-soft ${file.type === 'pdf' ? 'bg-accent/10 text-accent' : 'bg-emerald-50 text-emerald-500'}`}>
                               <FileText className="w-7 h-7" />
                             </div>
                             <div className="flex-1">
@@ -1810,7 +1821,7 @@ export default function App() {
                                  e.stopPropagation();
                                  setUploadedFiles(prev => prev.filter((_, idx) => idx !== i));
                               }}
-                              className="p-3 text-slate-200 hover:text-red-500 transition-colors hover:bg-red-50 rounded-xl"
+                              className="p-3 text-slate-200 hover:text-accent transition-colors hover:bg-accent/10 rounded-xl"
                             >
                               <Plus className="w-6 h-6 rotate-45" />
                             </button>
@@ -1867,7 +1878,7 @@ export default function App() {
                   <ArrowRight className="w-6 h-6 rotate-180" />
                 </button>
                 <div>
-                   <h3 className="text-xl font-black text-white tracking-tight leading-none">Consultation</h3>
+                      <h3 className="text-xl font-black text-content-primary tracking-tight leading-none">Consultation</h3>
                    <div className="flex items-center gap-2 mt-1">
                       <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Live • 12:45</span>
@@ -1894,10 +1905,10 @@ export default function App() {
             <div className="absolute bottom-12 inset-x-0 px-8 z-30">
                <Card className="bg-slate-900/60 backdrop-blur-3xl border-white/10 p-6 flex items-center justify-around rounded-[3rem]">
                   {[
-                    { icon: isMuted ? MicOff : Mic, color: isMuted ? 'text-red-400' : 'text-white', action: () => setIsMuted(!isMuted) },
-                    { icon: isCameraOff ? VideoOff : Camera, color: isCameraOff ? 'text-red-400' : 'text-white', action: () => setIsCameraOff(!isCameraOff) },
+                    { icon: isMuted ? MicOff : Mic, color: isMuted ? 'text-accent' : 'text-white', action: () => setIsMuted(!isMuted) },
+                    { icon: isCameraOff ? VideoOff : Camera, color: isCameraOff ? 'text-accent' : 'text-white', action: () => setIsCameraOff(!isCameraOff) },
                     { icon: MessageSquare, color: 'text-white', action: () => setView('chat') },
-                    { icon: PhoneOff, color: 'text-white', bg: 'bg-red-500', shadow: 'shadow-red-500/40', action: () => setView('dashboard') }
+                    { icon: PhoneOff, color: 'text-white', bg: 'bg-accent', shadow: 'shadow-accent/40', action: () => setView('dashboard') }
                   ].map((ctrl, i) => (
                     <button 
                       key={i}
@@ -1967,7 +1978,7 @@ export default function App() {
             </div>
 
             {/* Quick Replies & Input */}
-            <div className="p-8 bg-white border-t border-slate-50 space-y-6 pb-12 shadow-strong">
+            <div className="p-8 bg-surface-card border-t border-slate-100/10 space-y-6 pb-12 shadow-strong">
               {/* Quick Replies */}
               <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
                 {["Pain levels?", "Next Visit?", "Upload Meds", "Expert Help"].map((reply) => (
@@ -2044,7 +2055,7 @@ export default function App() {
                 <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                   <motion.div 
                     animate={{ width: `${(caseStep/3)*100}%` }}
-                    className="h-full bg-blue-600" 
+                    className="h-full bg-primary" 
                   />
                 </div>
               </div>
@@ -2074,7 +2085,7 @@ export default function App() {
                           }}
                           className={`p-6 rounded-[2rem] border-2 transition-all flex flex-col gap-4 text-left ${
                             caseForm.type === type.id 
-                            ? 'border-blue-600 bg-blue-50/50 shadow-lg shadow-blue-100' 
+                            ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' 
                             : 'border-slate-100 hover:border-slate-200'
                           }`}
                         >
@@ -2100,7 +2111,7 @@ export default function App() {
                     </div>
                     <textarea
                       placeholder="Type your symptoms here..."
-                      className="w-full h-48 bg-slate-50 border-2 border-slate-100 rounded-3xl p-6 outline-none focus:border-blue-500 focus:bg-white transition-all text-slate-900 font-medium resize-none shadow-sm"
+                      className="w-full h-48 bg-slate-50 border-2 border-slate-100 rounded-3xl p-6 outline-none focus:border-primary focus:bg-white transition-all text-slate-900 font-medium resize-none shadow-sm"
                       value={caseForm.symptoms}
                       onChange={(e) => setCaseForm({ ...caseForm, symptoms: e.target.value })}
                     />
@@ -2128,9 +2139,9 @@ export default function App() {
                       <p className="text-slate-500">Provide any MRI, X-Ray, or previous medical reports for AI assessment.</p>
                     </div>
                     
-                    <div className="border-3 border-dashed border-slate-200 rounded-[2.5rem] p-12 flex flex-col items-center justify-center gap-4 bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all group cursor-pointer">
+                    <div className="border-3 border-dashed border-slate-200 rounded-[2.5rem] p-12 flex flex-col items-center justify-center gap-4 bg-slate-50/50 hover:bg-white hover:border-primary/40 transition-all group cursor-pointer">
                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Upload className="w-8 h-8 text-blue-600" />
+                        <Upload className="w-8 h-8 text-primary" />
                       </div>
                       <span className="text-slate-900 font-bold">Tap to upload files</span>
                       <span className="text-slate-400 text-xs">PDF, JPG or DICOM (Max 50MB)</span>
@@ -2142,7 +2153,7 @@ export default function App() {
                           setView('dashboard');
                           setCaseStep(1);
                         }}
-                        className="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-2xl shadow-blue-100 hover:bg-blue-700 transition-all"
+                        className="w-full bg-primary text-white p-5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all"
                         id="submit-case"
                       >
                         Submit Application
@@ -2358,7 +2369,7 @@ export default function App() {
                         <h4 className="text-xl font-black text-white tracking-tight">{selectedCase.doctor}</h4>
                         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Surgical Specialist</p>
                         <div className="mt-3">
-                          <Badge variant="blue" className="bg-blue-500/20 text-blue-300 border-none">Verified Expert</Badge>
+                          <Badge variant="blue" className="bg-primary/20 text-blue-200 border-none">Verified Expert</Badge>
                         </div>
                       </div>
                     </div>
@@ -2397,7 +2408,7 @@ export default function App() {
                       </div>
 
                       <div className="flex-1 pb-10">
-                        <h5 className={`text-base font-black tracking-tight ${step.state === 'upcoming' ? 'text-slate-300' : 'text-slate-900'}`}>{step.label}</h5>
+                        <h5 className={`text-base font-black tracking-tight ${step.state === 'upcoming' ? 'text-slate-300' : 'text-content-primary'}`}>{step.label}</h5>
                         <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${step.state === 'active' ? 'text-primary' : 'text-content-muted'}`}>{step.date}</p>
                       </div>
                     </div>
@@ -2413,19 +2424,19 @@ export default function App() {
               >
                 <div className="flex justify-between items-center mb-6">
                   <SectionTitle title="Records" />
-                  <button className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 px-4 py-2 rounded-full transition-all">View All</button>
+                  <button className="text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/5 px-4 py-2 rounded-full transition-all">View All</button>
                 </div>
                 <div className="space-y-4">
                   {['MRI Scan Report', 'Blood Panel Results'].map((report, i) => (
                     <Card key={i} className="p-6 flex items-center gap-6 group hover:border-primary transition-all">
-                      <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-14 h-14 bg-accent/5 text-accent rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <FileText className="w-7 h-7" />
                       </div>
                       <div className="flex-1">
-                        <h5 className="text-base font-black text-slate-900 tracking-tight">{report}</h5>
+                        <h5 className="text-base font-black text-content-primary tracking-tight">{report}</h5>
                         <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">PDF • 2.4 MB • MAR 14</p>
                       </div>
-                      <button className="p-3 text-slate-200 group-hover:text-primary transition-colors hover:bg-blue-50 rounded-xl">
+                      <button className="p-3 text-slate-200 group-hover:text-primary transition-colors hover:bg-primary/5 rounded-xl">
                         <ArrowRight className="w-5 h-5 -rotate-45" />
                       </button>
                     </Card>
@@ -2506,26 +2517,29 @@ export default function App() {
                   }}
                   className="cursor-pointer group"
                 >
-                  <Card className="bg-primary border-none overflow-hidden group-active:scale-[0.98] transition-all p-10 relative text-white">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl transition-colors"></div>
+                  <Card className="bg-gradient-to-br from-primary/90 to-primary border-none overflow-hidden group-active:scale-[0.98] transition-all p-10 relative text-white shadow-2xl shadow-primary/20">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     <div className="relative z-10">
                       <div className="flex justify-between items-center mb-10">
-                        <Badge variant="secondary" className="bg-white/20 text-white border-white/20">Active Case</Badge>
-                        <span className="text-white/60 text-[10px] font-black uppercase tracking-widest">Started Mar 12</span>
+                        <Badge variant="secondary" className="bg-white/20 text-white border-white/20 px-4 py-2">ACTIVE CASE</Badge>
+                        <span className="text-white/60 text-[10px] font-black uppercase tracking-widest">Started {activeCase.startDate}</span>
                       </div>
-                      <h3 className="text-3xl font-black text-white mb-3 tracking-tight leading-tight">ACL Reconstruction</h3>
-                      <p className="text-white/70 font-medium mb-10">Pre-Surgery Assessment</p>
+                      
+                      <div className="mb-10">
+                        <h3 className="text-3xl font-black text-white mb-2 tracking-tight leading-tight">{activeCase.title}</h3>
+                        <p className="text-white/70 font-medium">{activeCase.phase}</p>
+                      </div>
                       
                       {/* Progress Indicator */}
                       <div className="space-y-4">
                         <div className="flex justify-between items-end">
-                          <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Phase 2 of 5</p>
-                          <p className="text-sm font-black text-white">40% Completed</p>
+                          <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Progress</p>
+                          <p className="text-sm font-black text-white">{activeCase.progress}% Completed</p>
                         </div>
                         <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
                           <motion.div 
                             initial={{ width: 0 }}
-                            animate={{ width: "40%" }}
+                            animate={{ width: `${activeCase.progress}%` }}
                             transition={{ duration: 1.5, delay: 0.5 }}
                             className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.4)]" 
                           />
@@ -2535,28 +2549,32 @@ export default function App() {
                   </Card>
                 </motion.section>
 
+                {/* Care Specialist Section */}
                 <div className="space-y-6">
-                  <SectionTitle title="Care Specialist" />
-                  <Card onClick={() => setView('doctorProfile')} className="p-8 border-slate-50 bg-white/50">
+                  <SectionTitle title="CARE SPECIALIST" />
+                  <Card onClick={() => setView('doctorProfile')} className="p-8 border-slate-100 bg-white shadow-soft hover:shadow-strong transition-all">
                     <div className="flex items-center gap-6 mb-8">
-                      <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100 shadow-soft">
+                      <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0 shadow-sm">
                         <img 
                           src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
-                          alt="Dr. Sarah Mitchell" 
+                          alt={doctor.name} 
                           className="w-full h-full object-cover"
                           referrerPolicy="no-referrer"
                         />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h4>
-                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Orthopedic Surgeon</p>
-                        <div className="mt-2">
-                          <Badge variant="emerald">Certified Specialist</Badge>
-                        </div>
+                        <h4 className="text-xl font-black text-content-primary tracking-tight">{doctor.name}</h4>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">{doctor.specialization}</p>
+                        {doctor.certified && (
+                          <div className="mt-2 text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full inline-flex items-center gap-1.5 uppercase tracking-widest border border-emerald-100">
+                             <Check className="w-3 h-3" strokeWidth={4} />
+                             Certified Specialist
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-4">
-                      <Button variant="ghost" className="flex-1 py-4 border-slate-100" onClick={(e) => { e.stopPropagation(); }}>
+                      <Button variant="ghost" className="flex-1 py-4 bg-slate-50 border-slate-100" onClick={(e) => { e.stopPropagation(); }}>
                         <Calendar className="w-4 h-4" />
                         Schedule
                       </Button>
@@ -2565,7 +2583,6 @@ export default function App() {
                         className="flex-1 py-4"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedCase(mockCases[0]);
                           setView('chat');
                         }}
                       >
@@ -2586,7 +2603,7 @@ export default function App() {
                       <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Calendar className="w-6 h-6 text-secondary" />
                       </div>
-                      <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Book<br/>Specialist</span>
+                      <span className="font-black text-content-primary text-sm uppercase tracking-widest leading-relaxed">Book<br/>Specialist</span>
                     </Card>
                     <Card 
                       onClick={() => setView('uploadReport')}
@@ -2595,7 +2612,7 @@ export default function App() {
                       <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Upload className="w-6 h-6 text-emerald-600" />
                       </div>
-                      <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Upload<br/>Records</span>
+                      <span className="font-black text-content-primary text-sm uppercase tracking-widest leading-relaxed">Upload<br/>Records</span>
                     </Card>
                   </div>
                 </div>
@@ -2625,12 +2642,12 @@ export default function App() {
                 <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                   <LogOut className="w-10 h-10 text-red-500" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Sign Out?</h3>
+                  <h3 className="text-2xl font-black text-content-primary tracking-tight mb-2">Sign Out?</h3>
                 <p className="text-content-secondary font-medium mb-8">Are you sure you want to log out of your account?</p>
                 
                 <div className="space-y-3">
                   <Button 
-                    className="bg-red-500 hover:bg-red-600 border-red-500 shadow-red-200 w-full"
+                    className="bg-accent hover:bg-red-600 border-accent shadow-accent/20 w-full"
                     onClick={async () => {
                       await supabase.auth.signOut();
                       setShowLogoutConfirm(false);
@@ -2661,7 +2678,7 @@ export default function App() {
 
       {/* Background Decorative Blurs */}
       <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-50/30 rounded-full blur-[100px]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-slate-50/50 rounded-full blur-[100px]" />
       </div>
     </div>

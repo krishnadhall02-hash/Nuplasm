@@ -21,17 +21,17 @@ export const Header = ({
   rightElement?: ReactNode,
   sticky?: boolean
 }) => (
-  <div className={`${sticky ? 'sticky top-0 bg-white/80 backdrop-blur-md z-30' : ''} p-6 pt-10 flex items-center justify-between`}>
+  <div className={`${sticky ? 'sticky top-0 bg-white/90 backdrop-blur-md z-30' : ''} p-6 pt-10 flex items-center justify-between border-b border-slate-50`}>
     {onBack ? (
       <button 
         onClick={onBack}
-        className="p-2 -ml-2 rounded-xl hover:bg-slate-100 transition-colors"
+        className="p-3 -ml-2 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 shadow-sm"
       >
-        <ArrowRight className="w-6 h-6 rotate-180 text-slate-800" />
+        <ArrowRight className="w-5 h-5 rotate-180 text-slate-800" />
       </button>
-    ) : <div className="w-10" />}
-    <h3 className="font-bold text-slate-900">{title}</h3>
-    {rightElement || <div className="w-10" />}
+    ) : <div className="w-11" />}
+    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">{title}</h3>
+    {rightElement || <div className="w-11" />}
   </div>
 );
 

@@ -26,6 +26,34 @@
   --shadow-primary: 0 10px 40px rgba(10, 61, 145, 0.2);
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-surface-bg: #F5F7FA;
+  --color-surface-card: #FFFFFF;
+  --color-content-primary: #111111;
+  --color-content-secondary: #666666;
+  --color-content-muted: #94A3B8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface-bg: #0B0B0B;
+    --color-surface-card: #161616;
+    --color-content-primary: #FFFFFF;
+    --color-content-secondary: #A1A1AA;
+    --color-content-muted: #52525B;
+  }
+}
+
+.dark {
+  --color-surface-bg: #0B0B0B;
+  --color-surface-card: #161616;
+  --color-content-primary: #FFFFFF;
+  --color-content-secondary: #A1A1AA;
+  --color-content-muted: #52525B;
+}
+
 @layer base {
   body {
     @apply bg-surface-bg text-content-primary font-sans antialiased;
