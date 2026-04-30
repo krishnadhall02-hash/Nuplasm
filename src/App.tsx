@@ -84,7 +84,7 @@ export default function App() {
               onClick={() => setView(tab.id as any)}
               className="flex flex-col items-center gap-1 group"
             >
-              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-primary text-white shadow-primary scale-110' : 'text-content-muted group-hover:text-primary'}`}>
+              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-gradient-to-tr from-primary to-secondary text-white shadow-primary scale-110' : 'text-content-muted group-hover:text-primary'}`}>
                 <Icon className="w-5 h-5" />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-primary' : 'text-content-muted'}`}>
@@ -137,7 +137,7 @@ export default function App() {
 
         <button
           onClick={() => setShowFabMenu(!showFabMenu)}
-          className={`w-16 h-16 rounded-[28px] flex items-center justify-center shadow-2xl transition-all duration-500 ${showFabMenu ? 'bg-slate-900 rotate-45' : 'bg-primary shadow-primary/40'}`}
+          className={`w-16 h-16 rounded-[28px] flex items-center justify-center shadow-2xl transition-all duration-500 ${showFabMenu ? 'bg-slate-900 rotate-45' : 'bg-gradient-to-tr from-primary to-secondary shadow-primary/40'}`}
         >
           <Plus className="w-8 h-8 text-white" />
         </button>
@@ -633,7 +633,7 @@ export default function App() {
                     <Stethoscope className="w-8 h-8" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h2>
+                    <h2 className="text-2xl font-black text-content-primary tracking-tight">Dr. Sarah Mitchell</h2>
                     <p className="text-[10px] text-content-muted font-black uppercase tracking-[0.2em] mt-1">Surgical Lead • Orthopedics</p>
                   </div>
                 </div>
@@ -653,7 +653,7 @@ export default function App() {
                   { label: 'Cleared', value: '8', variant: 'emerald' }
                 ].map((stat, i) => (
                   <div key={i} className="flex flex-col items-center">
-                    <p className="text-3xl font-black text-slate-900 mb-1">{stat.value}</p>
+                    <p className="text-3xl font-black text-content-primary mb-1">{stat.value}</p>
                     <Badge variant={stat.variant as any}>{stat.label}</Badge>
                   </div>
                 ))}
@@ -901,7 +901,7 @@ export default function App() {
             <div className="p-8 pb-6 flex justify-between items-center bg-surface-card/50 backdrop-blur-md sticky top-0 z-30">
               <div>
                 <p className="text-sm font-medium text-content-secondary">Good Morning,</p>
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Krishna</h2>
+                <h2 className="text-3xl font-black text-content-primary tracking-tight">Krishna</h2>
               </div>
               <button 
                 onClick={() => setView('notifications')}
@@ -925,7 +925,7 @@ export default function App() {
                         <Check className="w-4 h-4 text-white" />
                       </div>
                     </div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Krishna Dhall</h3>
+                    <h3 className="text-2xl font-black text-content-primary tracking-tight">Krishna Dhall</h3>
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-muted mt-2">Patient ID: #PAT-2024-X</p>
                   </div>
 
@@ -934,11 +934,11 @@ export default function App() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Age</p>
-                      <p className="text-xl font-black text-slate-900">28</p>
+                      <p className="text-xl font-black text-content-primary">28</p>
                     </div>
                     <div className="border-x border-slate-50">
                       <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Weight</p>
-                      <p className="text-xl font-black text-slate-900">72kg</p>
+                      <p className="text-xl font-black text-content-primary">72kg</p>
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Blood</p>
@@ -1091,7 +1091,7 @@ export default function App() {
                 <div className="w-20 h-20 bg-primary/5 rounded-4xl flex items-center justify-center mx-auto mb-6 shadow-soft">
                   <ShieldCheck className="w-10 h-10 text-primary" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Safe & Secure</h3>
+                <h3 className="text-2xl font-black text-content-primary tracking-tight">Safe & Secure</h3>
                 <p className="text-content-secondary font-medium mt-2">Manage your data protection</p>
               </div>
 
@@ -1134,7 +1134,8 @@ export default function App() {
                         <LogOut className="w-6 h-6 text-accent" />
                       </div>
                       <div className="text-left">
-                        <p className="font-black text-slate-900 group-hover:text-accent transition-colors tracking-tight">Sign Out</p>                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">End current session</p>
+                        <p className="font-black text-content-primary group-hover:text-accent transition-colors tracking-tight">Sign Out</p>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">End current session</p>
                       </div>
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300" />
@@ -1144,9 +1145,10 @@ export default function App() {
                 <Card className="p-8 border-accent/10">
                   <h4 className="font-black text-accent uppercase text-[10px] tracking-widest mb-4">Privacy Actions</h4>
                   <div className="space-y-4">
-                    <Button variant="ghost" className="bg-accent/10 text-accent hover:bg-accent hover:text-white transition-all py-4">
+                    <Button variant="danger" className="py-4">
                       Clear Cache & Data
-                    </Button>                    <Button variant="ghost" className="text-content-muted text-[10px] font-black uppercase tracking-widest">
+                    </Button>
+                    <Button variant="ghost" className="text-content-muted text-[10px] font-black uppercase tracking-widest">
                       Request My Data Record
                     </Button>
                   </div>
@@ -1170,7 +1172,7 @@ export default function App() {
                 <div className="w-16 h-16 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-primary/10">
                   <Key className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">Update Authentication</h3>
+                <h3 className="text-2xl font-black text-content-primary tracking-tight leading-tight">Update Authentication</h3>
                 <p className="text-content-secondary font-medium mt-1">Keep your account secure</p>
               </div>
 
@@ -1400,7 +1402,7 @@ export default function App() {
                   <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-primary/10">
                     <MessageCircle className="w-10 h-10 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">How can we help?</h3>
+                  <h3 className="text-2xl font-black text-content-primary tracking-tight">How can we help?</h3>
                   <p className="text-content-secondary font-medium mt-2">Our team typically responds in under 1 hour</p>
                 </div>
 
@@ -1520,7 +1522,7 @@ export default function App() {
 
             <Container className="space-y-12 pb-12">
               <div className="text-center space-y-2">
-                <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Superior Support</h2>
+                <h2 className="text-4xl font-black text-content-primary tracking-tight leading-tight">Superior Support</h2>
                 <p className="text-content-secondary font-medium tracking-tight">Choose the best care path for your recovery.</p>
               </div>
 
@@ -1648,7 +1650,7 @@ export default function App() {
 
             <Container className="space-y-12">
               <div className="space-y-2">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Book Appointment</h2>
+                <h2 className="text-3xl font-black text-content-primary tracking-tight leading-tight">Book Appointment</h2>
                 <p className="text-content-secondary font-medium tracking-tight">Select your preferred slot for consultation.</p>
               </div>
 
@@ -1692,8 +1694,8 @@ export default function App() {
                         onClick={() => setSelectedTime(time)}
                         className={`p-5 rounded-2xl font-black text-sm tracking-tight transition-all border-4 ${
                           selectedTime === time
-                          ? 'bg-slate-900 border-slate-900 text-white shadow-strong'
-                          : 'bg-white border-slate-50 text-slate-400 hover:border-slate-100'
+                          ? 'bg-primary border-primary text-white shadow-strong shadow-primary/20'
+                          : 'bg-surface-card border-border-default text-content-muted hover:border-primary/20'
                         }`}
                       >
                         {time}
@@ -1713,7 +1715,7 @@ export default function App() {
                           type === 'Initial Assessment' ? 'border-primary ring-2 ring-primary/5' : ''
                         }`}
                      >
-                       <span className={`font-black tracking-tight ${type === 'Initial Assessment' ? 'text-slate-900' : 'text-content-secondary'}`}>{type}</span>
+                       <span className={`font-black tracking-tight ${type === 'Initial Assessment' ? 'text-primary' : 'text-content-secondary'}`}>{type}</span>
                        <div className={`w-8 h-8 rounded-full border-4 flex items-center justify-center transition-all ${
                           type === 'Initial Assessment' ? 'border-primary' : 'border-slate-50 group-hover:border-slate-100'
                        }`}>
@@ -1752,7 +1754,7 @@ export default function App() {
 
             <Container className="space-y-12 pb-40">
               <div className="space-y-2 text-center">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Digital Vault</h2>
+                <h2 className="text-3xl font-black text-content-primary tracking-tight leading-tight">Digital Vault</h2>
                 <p className="text-content-secondary font-medium tracking-tight">Upload medical scans for instant AI analysis.</p>
               </div>
 
@@ -2044,7 +2046,7 @@ export default function App() {
                 >
                   <ArrowRight className="w-6 h-6 rotate-180 text-slate-800" />
                 </button>
-                <h3 className="font-bold text-slate-900">New Application</h3>
+                <h3 className="font-bold text-content-primary">New Application</h3>
                 <div className="w-10"></div>
               </div>
               <div className="px-6 pb-4">
@@ -2072,7 +2074,7 @@ export default function App() {
                     className="space-y-6"
                   >
                     <div className="mb-8">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2">Select Surgery Type</h2>
+                      <h2 className="text-2xl font-bold text-content-primary mb-2">Select Surgery Type</h2>
                       <p className="text-slate-500">Pick the category that best describes your needs.</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -2106,7 +2108,7 @@ export default function App() {
                     className="space-y-6"
                   >
                     <div className="mb-8">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2">Describe Symptoms</h2>
+                      <h2 className="text-2xl font-bold text-content-primary mb-2">Describe Symptoms</h2>
                       <p className="text-slate-500">Provide details about your pain, duration, and any previous injuries.</p>
                     </div>
                     <textarea
@@ -2521,7 +2523,7 @@ export default function App() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     <div className="relative z-10">
                       <div className="flex justify-between items-center mb-10">
-                        <Badge variant="secondary" className="bg-white/20 text-white border-white/20 px-4 py-2">ACTIVE CASE</Badge>
+                        <Badge variant="secondary" className="bg-white/20 text-white border-none px-4 py-2">ACTIVE CASE</Badge>
                         <span className="text-white/60 text-[10px] font-black uppercase tracking-widest">Started {activeCase.startDate}</span>
                       </div>
                       
@@ -2636,20 +2638,23 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-white rounded-[40px] p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-sm bg-surface-card rounded-[40px] p-8 shadow-2xl overflow-hidden"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <LogOut className="w-10 h-10 text-red-500" />
+                <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <LogOut className="w-10 h-10 text-accent" />
                 </div>
-                  <h3 className="text-2xl font-black text-content-primary tracking-tight mb-2">Sign Out?</h3>
+                <h3 className="text-2xl font-black text-content-primary tracking-tight mb-2">Sign Out?</h3>
                 <p className="text-content-secondary font-medium mb-8">Are you sure you want to log out of your account?</p>
                 
                 <div className="space-y-3">
                   <Button 
-                    className="bg-accent hover:bg-red-600 border-accent shadow-accent/20 w-full"
+                    variant="danger"
+                    className="w-full"
                     onClick={async () => {
-                      await supabase.auth.signOut();
+                      if (typeof supabase !== 'undefined') {
+                        await supabase.auth.signOut();
+                      }
                       setShowLogoutConfirm(false);
                       setView('splash');
                     }}
@@ -2658,7 +2663,7 @@ export default function App() {
                   </Button>
                   <button 
                     onClick={() => setShowLogoutConfirm(false)}
-                    className="w-full py-4 text-sm font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors"
+                    className="w-full py-4 text-sm font-black text-content-muted uppercase tracking-widest hover:text-content-secondary transition-colors"
                   >
                     Cancel
                   </button>

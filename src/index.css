@@ -15,11 +15,12 @@
   
   --color-surface-bg: #F5F7FA;
   --color-surface-card: #FFFFFF;
-  --color-surface-dark: #0B0B0B;
+  --color-surface-dark: #000000;
   
   --color-content-primary: #111111;
-  --color-content-secondary: #666666;
+  --color-content-secondary: #6B7280;
   --color-content-muted: #94A3B8;
+  --color-border-default: #E5E7EB;
 
   --shadow-soft: 0 4px 20px rgba(10, 61, 145, 0.05);
   --shadow-strong: 0 10px 30px rgba(10, 61, 145, 0.1);
@@ -32,14 +33,15 @@
   --color-surface-bg: #F5F7FA;
   --color-surface-card: #FFFFFF;
   --color-content-primary: #111111;
-  --color-content-secondary: #666666;
+  --color-content-secondary: #6B7280;
   --color-content-muted: #94A3B8;
+  --color-border-default: #E5E7EB;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-surface-bg: #0B0B0B;
-    --color-surface-card: #161616;
+    --color-surface-bg: #000000;
+    --color-surface-card: #121212;
     --color-content-primary: #FFFFFF;
     --color-content-secondary: #A1A1AA;
     --color-content-muted: #52525B;
@@ -47,8 +49,8 @@
 }
 
 .dark {
-  --color-surface-bg: #0B0B0B;
-  --color-surface-card: #161616;
+  --color-surface-bg: #000000;
+  --color-surface-card: #121212;
   --color-content-primary: #FFFFFF;
   --color-content-secondary: #A1A1AA;
   --color-content-muted: #52525B;

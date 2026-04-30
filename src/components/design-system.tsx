@@ -21,16 +21,16 @@ export const Header = ({
   rightElement?: ReactNode,
   sticky?: boolean
 }) => (
-  <div className={`${sticky ? 'sticky top-0 bg-white/90 backdrop-blur-md z-30' : ''} p-6 pt-10 flex items-center justify-between border-b border-slate-50`}>
+  <div className={`${sticky ? 'sticky top-0 bg-surface-card/90 backdrop-blur-md z-30' : ''} p-6 pt-10 flex items-center justify-between border-b border-border-default`}>
     {onBack ? (
       <button 
         onClick={onBack}
-        className="p-3 -ml-2 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 shadow-sm"
+        className="p-3 -ml-2 rounded-2xl bg-surface-bg hover:bg-slate-200 transition-all active:scale-95 shadow-sm"
       >
-        <ArrowRight className="w-5 h-5 rotate-180 text-slate-800" />
+        <ArrowRight className="w-5 h-5 rotate-180 text-primary" />
       </button>
     ) : <div className="w-11" />}
-    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">{title}</h3>
+    <h3 className="text-sm font-black text-primary uppercase tracking-widest">{title}</h3>
     {rightElement || <div className="w-11" />}
   </div>
 );
@@ -51,11 +51,11 @@ export const Button = ({
   icon?: any
 }) => {
   const variants = {
-    primary: "bg-primary text-white shadow-primary hover:opacity-90",
-    secondary: "bg-secondary text-white shadow-strong hover:opacity-90",
-    ghost: "bg-white text-primary hover:bg-primary/5 border border-primary/10",
-    danger: "bg-accent/10 text-accent hover:bg-accent hover:text-white border border-accent/20",
-    success: "bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-100",
+    primary: "bg-gradient-to-tr from-primary to-secondary text-white shadow-primary hover:opacity-95",
+    secondary: "bg-secondary/10 text-secondary hover:bg-secondary hover:text-white transition-all",
+    ghost: "bg-transparent text-primary hover:bg-primary/5 border border-primary/10",
+    danger: "bg-accent text-white shadow-strong hover:bg-red-600 transition-all",
+    success: "bg-emerald-500 text-white shadow-soft hover:bg-emerald-600 transition-all",
   };
 
   return (
@@ -88,7 +88,7 @@ export const Card = ({
   <motion.div
     whileHover={hoverable && onClick ? { scale: 1.01, y: -2 } : {}}
     onClick={onClick}
-    className={`bg-white p-6 rounded-4xl border border-slate-100 shadow-soft transition-all ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''} ${className}`}
+    className={`bg-surface-card p-6 rounded-4xl border border-border-default shadow-soft transition-all ${onClick ? 'cursor-pointer active:scale-[0.99]' : ''} ${className}`}
     {...props}
   >
     {children}
