@@ -51,10 +51,10 @@ export const Button = ({
   icon?: any
 }) => {
   const variants = {
-    primary: "bg-slate-900 text-white shadow-strong hover:bg-slate-800",
-    secondary: "bg-blue-600 text-white shadow-primary hover:bg-blue-700",
-    ghost: "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100",
-    danger: "bg-red-50 text-red-600 hover:bg-red-500 hover:text-white border border-red-100",
+    primary: "bg-primary text-white shadow-primary hover:opacity-90",
+    secondary: "bg-secondary text-white shadow-strong hover:opacity-90",
+    ghost: "bg-white text-primary hover:bg-primary/5 border border-primary/10",
+    danger: "bg-accent/10 text-accent hover:bg-accent hover:text-white border border-accent/20",
     success: "bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white border border-emerald-100",
   };
 
@@ -102,13 +102,15 @@ export const Badge = ({
   ...props
 }: { 
   children: ReactNode, 
-  variant?: 'blue' | 'red' | 'emerald' | 'amber' | 'purple' | 'slate',
+  variant?: 'primary' | 'secondary' | 'blue' | 'red' | 'emerald' | 'amber' | 'purple' | 'slate',
   className?: string,
   [key: string]: any
 }) => {
   const variants = {
-    blue: 'bg-blue-50 text-blue-600',
-    red: 'bg-red-50 text-red-600',
+    primary: 'bg-primary/10 text-primary',
+    secondary: 'bg-secondary/10 text-secondary',
+    blue: 'bg-primary/10 text-primary',
+    red: 'bg-accent/10 text-accent',
     emerald: 'bg-emerald-50 text-emerald-600',
     amber: 'bg-amber-50 text-amber-600',
     purple: 'bg-purple-50 text-purple-600',
@@ -135,9 +137,9 @@ export const SectionTitle = ({
   actionLabel?: string 
 }) => (
   <div className="flex justify-between items-center mb-4 px-2">
-    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{title}</h4>
+    <h4 className="text-[10px] font-black text-content-muted uppercase tracking-[0.2em]">{title}</h4>
     {action && (
-      <button onClick={action} className="text-blue-600 font-bold text-xs hover:underline">
+      <button onClick={action} className="text-secondary font-bold text-xs hover:underline">
         {actionLabel || 'View All'}
       </button>
     )}

@@ -4,12 +4,12 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2, Download, Share2, Settings, LogOut, Heart, Info, CreditCard, Star, Camera, Check, File, Key, Fingerprint, LogOut as LogOutIcon } from 'lucide-react';
+import { Stethoscope, Search, Brain, Video, ArrowRight, ChevronRight, Phone, MessageSquare, Mail, ShieldCheck, Clock, Plus, Home, Calendar, FileText, User, MessageCircle, Upload, MoreHorizontal, Bell, Paperclip, Send, CheckCheck, Mic, MicOff, VideoOff, PhoneOff, Maximize2, Download, Share2, Settings, LogOut, Heart, Info, CreditCard, Star, Camera, Check, File, Key, Fingerprint, LogOut as LogOutIcon, Activity } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, KeyboardEvent } from 'react';
 import { Button, Card, Header, Container, Badge, SectionTitle, FloatingBanner } from './components/design-system';
 import { supabase } from './lib/supabase';
 
-type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport' | 'booking' | 'payment' | 'receipt' | 'notifications' | 'doctorDashboard' | 'settings' | 'notifSettings' | 'securitySettings' | 'billingHistory' | 'helpSupport' | 'passwordChange';
+type AppView = 'splash' | 'onboarding' | 'login' | 'otp' | 'dashboard' | 'chat' | 'newCase' | 'caseDetail' | 'doctorProfile' | 'videoCall' | 'uploadReport' | 'booking' | 'payment' | 'receipt' | 'notifications' | 'doctorDashboard' | 'settings' | 'notifSettings' | 'securitySettings' | 'billingHistory' | 'helpSupport' | 'passwordChange' | 'care' | 'docs';
 
 export default function App() {
   const [view, setView] = useState<AppView>('splash');
@@ -63,6 +63,87 @@ export default function App() {
     { id: 'CON-12093-X', date: 'Jan 10, 2024', amount: '$49.00', status: 'Paid', plan: 'Initial Consult', receipt_url: '#' },
     { id: 'PAY-WAI-992', date: 'May 02, 2024', amount: '$299.00', status: 'Pending', plan: 'Post-Op Rehab', receipt_url: null }
   ]);
+  const [showFabMenu, setShowFabMenu] = useState(false);
+
+  const BottomNav = () => {
+    const tabs = [
+      { id: 'dashboard', label: 'Home', icon: Home },
+      { id: 'care', label: 'Care', icon: MessageCircle },
+      { id: 'docs', label: 'Docs', icon: FileText },
+      { id: 'settings', label: 'Profile', icon: User },
+    ];
+
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-100 px-6 pb-8 pt-4 flex justify-between items-center z-50">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = view === tab.id || (tab.id === 'settings' && ['notifications', 'securitySettings', 'billingHistory', 'helpSupport'].includes(view));
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setView(tab.id as any)}
+              className="flex flex-col items-center gap-1 group"
+            >
+              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'text-slate-400 group-hover:text-primary'}`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-primary' : 'text-slate-400'}`}>
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const FloatingActionButton = () => {
+    // Only show on main tabs
+    if (!['dashboard', 'care', 'docs', 'settings'].includes(view)) return null;
+
+    return (
+      <div className="fixed bottom-28 right-6 z-50">
+        <AnimatePresence>
+          {showFabMenu && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              className="absolute bottom-20 right-0 flex flex-col gap-3 items-end"
+            >
+              {[
+                { label: 'New Case', icon: Plus, color: 'bg-primary' },
+                { label: 'Upload Report', icon: Upload, color: 'bg-emerald-500' },
+              ].map((action, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    alert(`Action: ${action.label}`);
+                    setShowFabMenu(false);
+                  }}
+                  className="flex items-center gap-3 group"
+                >
+                  <span className="bg-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl border border-slate-50 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {action.label}
+                  </span>
+                  <div className={`w-14 h-14 ${action.color} text-white rounded-3xl flex items-center justify-center shadow-xl hover:scale-110 transition-transform`}>
+                    <action.icon className="w-6 h-6" />
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          onClick={() => setShowFabMenu(!showFabMenu)}
+          className={`w-16 h-16 rounded-[28px] flex items-center justify-center shadow-2xl transition-all duration-500 ${showFabMenu ? 'bg-slate-900 rotate-45' : 'bg-primary shadow-primary/40'}`}
+        >
+          <Plus className="w-8 h-8 text-white" />
+        </button>
+      </div>
+    );
+  };
 
   useEffect(() => {
     if (view === 'billingHistory') {
@@ -795,6 +876,135 @@ export default function App() {
           </motion.div>
         )}
 
+        {view === 'settings' && (
+          <motion.div
+            key="settings"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            {/* Profile Header */}
+            <div className="p-8 pb-6 flex justify-between items-center bg-white/50 backdrop-blur-md sticky top-0 z-30">
+              <div>
+                <p className="text-sm font-medium text-content-secondary">Good Morning,</p>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Krishna</h2>
+              </div>
+              <button 
+                onClick={() => setView('notifications')}
+                className="relative p-3 bg-white rounded-2xl shadow-soft border border-slate-100 group active:scale-90 transition-all"
+              >
+                <Bell className="w-6 h-6 text-slate-600 group-hover:text-primary transition-colors" />
+                <span className="absolute top-3 right-3 w-3 h-3 bg-accent rounded-full border-2 border-white shadow-lg shadow-accent/20"></span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
+              <Container className="pt-4 space-y-8">
+                {/* Profile Card (Main Container) */}
+                <Card className="p-8 shadow-strong border-none bg-white relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl transition-all group-hover:scale-110"></div>
+                  
+                  <div className="flex flex-col items-center mb-8">
+                    <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center text-primary mb-6 border-4 border-white shadow-strong relative">
+                      <User className="w-12 h-12" />
+                      <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center border-4 border-white shadow-primary">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Krishna Dhall</h3>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-content-muted mt-2">Patient ID: #PAT-2024-X</p>
+                  </div>
+
+                  <div className="h-px bg-slate-100 w-full mb-8"></div>
+
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Age</p>
+                      <p className="text-xl font-black text-slate-900">28</p>
+                    </div>
+                    <div className="border-x border-slate-50">
+                      <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Weight</p>
+                      <p className="text-xl font-black text-slate-900">72kg</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Blood</p>
+                      <p className="text-xl font-black text-accent">O+</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Action Buttons */}
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => setView('payment')}
+                    className="w-full bg-[#0A3D91] hover:bg-[#083075] text-white py-5 rounded-full font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-primary shadow-lg active:scale-95 transition-all"
+                  >
+                    <ShieldCheck className="w-5 h-5" />
+                    Upgrade to Premium
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost"
+                    onClick={() => setView('doctorDashboard')}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-primary py-5 rounded-full font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-all"
+                  >
+                    <Stethoscope className="w-5 h-5" />
+                    Doctor Portal Access
+                  </Button>
+                </div>
+
+                {/* Vital Information Section */}
+                <div className="space-y-6">
+                  <SectionTitle title="Vital Information" />
+                  <Card className="p-8 flex items-center gap-6 border-slate-50 group hover:border-primary/20 transition-all cursor-pointer shadow-soft active:scale-[0.98]">
+                    <div className="w-16 h-16 bg-accent/10 text-accent rounded-3xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <Heart className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-2">Allergies</p>
+                      <p className="text-lg font-black text-slate-900 tracking-tight leading-none">Peanuts, Penicillin</p>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-slate-200 ml-auto group-hover:translate-x-1 group-hover:text-primary transition-all" />
+                  </Card>
+                </div>
+
+                {/* Main Menu Options */}
+                <div className="space-y-6">
+                   <SectionTitle title="Account Settings" />
+                   <Card className="overflow-hidden p-0 shadow-soft border-slate-50">
+                    {[
+                      { icon: Bell, label: 'Notifications', desc: 'Push, Email, SMS', action: () => setView('notifSettings') },
+                      { icon: ShieldCheck, label: 'Security & Privacy', desc: 'Biometric, Password', action: () => setView('securitySettings') },
+                      { icon: CreditCard, label: 'Billing History', desc: 'Manage Payments', action: () => setView('billingHistory') },
+                      { icon: MessageCircle, label: 'Help & Support', desc: 'Contact Care Team', action: () => setView('helpSupport') },
+                      { icon: LogOut, label: 'Logout', desc: 'End Current Session', danger: true, action: () => setShowLogoutConfirm(true) }
+                    ].map((item, i, arr) => (
+                      <button 
+                        key={i} 
+                        onClick={item.action}
+                        className={`w-full p-6 flex items-center gap-5 hover:bg-slate-50 active:bg-slate-100 transition-all text-left group ${i !== arr.length - 1 ? 'border-b border-slate-50' : ''}`}
+                      >
+                        <div className={`p-4 rounded-2xl ${item.danger ? 'bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white' : 'bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white'} transition-all`}>
+                          <item.icon className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className={`font-black text-base tracking-tight ${item.danger ? 'text-accent' : 'text-slate-900 group-hover:text-primary transition-colors'}`}>{item.label}</p>
+                          <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">{item.desc}</p>
+                        </div>
+                        <ChevronRight className={`w-5 h-5 ${item.danger ? 'text-accent/30' : 'text-slate-200'} group-hover:translate-x-1 group-hover:text-primary transition-all`} />
+                      </button>
+                    ))}
+                  </Card>
+                </div>
+
+                <div className="text-center pt-8 pb-12">
+                   <p className="text-[10px] text-slate-200 font-black uppercase tracking-[0.4em]">Nuplasm AI v2.4.0</p>
+                </div>
+              </Container>
+            </div>
+          </motion.div>
+        )}
         {view === 'notifSettings' && (
           <motion.div
             key="notifSettings"
@@ -1091,6 +1301,79 @@ export default function App() {
           </motion.div>
         )}
 
+        {view === 'care' && (
+          <motion.div
+            key="care"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Your Care Team" onBack={() => setView('dashboard')} />
+            <Container className="pt-8 space-y-8 pb-32">
+              <SectionTitle title="Active Providers" />
+              <div className="space-y-4">
+                {[
+                  { name: 'Dr. Sarah Chen', role: 'Lead Surgeon', status: 'Online', avatar: 'SC' },
+                  { name: 'Mark Thompson', role: 'Physiotherapist', status: 'Offline', avatar: 'MT' }
+                ].map((doc, i) => (
+                  <Card key={i} className="p-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary font-black">
+                        {doc.avatar}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-slate-900">{doc.name}</p>
+                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest">{doc.role}</p>
+                      </div>
+                    </div>
+                    <Badge variant={doc.status === 'Online' ? 'emerald' : 'slate'}>{doc.status}</Badge>
+                  </Card>
+                ))}
+              </div>
+              <Button variant="primary" icon={MessageSquare}>Start Group Chat</Button>
+            </Container>
+          </motion.div>
+        )}
+
+        {view === 'docs' && (
+          <motion.div
+            key="docs"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="flex-1 flex flex-col bg-surface-bg h-screen"
+          >
+            <Header title="Patient Documents" onBack={() => setView('dashboard')} />
+            <Container className="pt-8 space-y-6 pb-32">
+              <div className="bg-white p-6 rounded-4xl border border-slate-100 flex items-center justify-between">
+                <div>
+                  <h4 className="text-lg font-black text-slate-900 tracking-tight">Your Vault</h4>
+                  <p className="text-[10px] font-black text-content-muted uppercase tracking-widest">End-to-end Encrypted</p>
+                </div>
+                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                </div>
+              </div>
+
+              <SectionTitle title="Recent Files" />
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { name: 'X-Ray Oct 12', size: '2.4 MB', type: 'Image' },
+                  { name: 'Post-Op Report', size: '156 KB', type: 'PDF' },
+                  { name: 'MRI Results', size: '45.1 MB', type: 'DICOM' },
+                  { name: 'Care Plan V2', size: '89 KB', type: 'DOCX' }
+                ].map((file, i) => (
+                  <Card key={i} className="p-6 group hover:border-primary transition-all">
+                    <FileText className="w-8 h-8 text-slate-300 mb-4 group-hover:text-primary transition-colors" />
+                    <p className="text-xs font-black text-slate-900 mb-1 truncate">{file.name}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{file.size}</p>
+                  </Card>
+                ))}
+              </div>
+            </Container>
+          </motion.div>
+        )}
         {view === 'helpSupport' && (
           <motion.div
             key="helpSupport"
@@ -2170,12 +2453,12 @@ export default function App() {
             </div>
           </motion.div>
         )}
-
         {view === 'dashboard' && (
           <motion.div
             key="dashboard"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="flex-1 flex flex-col relative bg-surface-bg h-screen"
           >
             {/* Nav Header */}
@@ -2204,367 +2487,122 @@ export default function App() {
               >
                 <Bell className="w-6 h-6 text-content-muted group-hover:text-primary transition-colors" />
                 {notifications.some(n => !n.read) && (
-                  <span className="absolute top-4 right-4 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full shadow-lg shadow-red-200"></span>
+                  <span className="absolute top-4 right-4 w-3.5 h-3.5 bg-accent border-2 border-white rounded-full shadow-lg shadow-accent/20"></span>
                 )}
               </motion.button>
             </div>
 
             {/* Content Scroll Area */}
             <div className="flex-1 overflow-y-auto no-scrollbar pb-40">
-              <Container>
-                {activeTab === 'home' && (
-                  <div className="space-y-12">
-                    {/* Active Case Card */}
-                    <motion.section
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      onClick={() => {
-                          setSelectedCase(mockCases[0]);
-                          setView('caseDetail');
-                      }}
-                      className="cursor-pointer group"
-                    >
-                      <Card className="bg-slate-900 border-none overflow-hidden group-active:scale-[0.98] transition-all p-10 relative">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl transition-colors"></div>
-                        <div className="relative z-10">
-                          <div className="flex justify-between items-center mb-10">
-                            <Badge variant="blue">Active Case</Badge>
-                            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Started Mar 12</span>
-                          </div>
-                          <h3 className="text-3xl font-black text-white mb-3 tracking-tight leading-tight">ACL Reconstruction</h3>
-                          <p className="text-slate-400 font-medium mb-10">Pre-Surgery Assessment</p>
-                          
-                          {/* Progress Indicator */}
-                          <div className="space-y-4">
-                            <div className="flex justify-between items-end">
-                              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Phase 2 of 5</p>
-                              <p className="text-sm font-black text-white">40% Completed</p>
-                            </div>
-                            <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
-                              <motion.div 
-                                initial={{ width: 0 }}
-                                animate={{ width: "40%" }}
-                                transition={{ duration: 1.5, delay: 0.5 }}
-                                className="h-full bg-primary shadow-[0_0_15px_rgba(37,99,235,0.4)]" 
-                              />
-                            </div>
-                          </div>
+              <Container className="space-y-12 pt-8">
+                {/* Active Case Card */}
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  onClick={() => {
+                      setSelectedCase(mockCases[0]);
+                      setView('caseDetail');
+                  }}
+                  className="cursor-pointer group"
+                >
+                  <Card className="bg-primary border-none overflow-hidden group-active:scale-[0.98] transition-all p-10 relative text-white">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl transition-colors"></div>
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-center mb-10">
+                        <Badge variant="secondary" className="bg-white/20 text-white border-white/20">Active Case</Badge>
+                        <span className="text-white/60 text-[10px] font-black uppercase tracking-widest">Started Mar 12</span>
+                      </div>
+                      <h3 className="text-3xl font-black text-white mb-3 tracking-tight leading-tight">ACL Reconstruction</h3>
+                      <p className="text-white/70 font-medium mb-10">Pre-Surgery Assessment</p>
+                      
+                      {/* Progress Indicator */}
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-end">
+                          <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Phase 2 of 5</p>
+                          <p className="text-sm font-black text-white">40% Completed</p>
                         </div>
-                      </Card>
-                    </motion.section>
-
-                    <div className="space-y-6">
-                      <SectionTitle title="Care Specialist" />
-                      <Card onClick={() => setView('doctorProfile')} className="p-8">
-                        <div className="flex items-center gap-6 mb-8">
-                          <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-50 shadow-soft">
-                            <img 
-                              src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
-                              alt="Dr. Sarah Mitchell" 
-                              className="w-full h-full object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="text-xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h4>
-                            <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Orthopedic Surgeon</p>
-                            <div className="mt-2">
-                              <Badge variant="emerald">Certified Specialist</Badge>
-                            </div>
-                          </div>
+                        <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: "40%" }}
+                            transition={{ duration: 1.5, delay: 0.5 }}
+                            className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.4)]" 
+                          />
                         </div>
-                        <div className="flex gap-4">
-                          <Button variant="ghost" className="flex-1 py-4 border-slate-100" onClick={(e) => { e.stopPropagation(); }}>
-                            <Calendar className="w-4 h-4" />
-                            Schedule
-                          </Button>
-                          <Button 
-                            variant="primary"
-                            className="flex-1 py-4"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedCase(mockCases[0]);
-                              setView('chat');
-                            }}
-                          >
-                             <MessageSquare className="w-4 h-4" />
-                             Chat now
-                          </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.section>
+
+                <div className="space-y-6">
+                  <SectionTitle title="Care Specialist" />
+                  <Card onClick={() => setView('doctorProfile')} className="p-8 border-slate-50 bg-white/50">
+                    <div className="flex items-center gap-6 mb-8">
+                      <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100 shadow-soft">
+                        <img 
+                          src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop" 
+                          alt="Dr. Sarah Mitchell" 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-xl font-black text-slate-900 tracking-tight">Dr. Sarah Mitchell</h4>
+                        <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-1">Orthopedic Surgeon</p>
+                        <div className="mt-2">
+                          <Badge variant="emerald">Certified Specialist</Badge>
                         </div>
-                      </Card>
-                    </div>
-
-                    <div className="space-y-6 pb-12">
-                      <SectionTitle title="Quick Actions" />
-                      <div className="grid grid-cols-2 gap-4">
-                        <Card 
-                          onClick={() => setView('booking')}
-                          className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group"
-                        >
-                          <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Calendar className="w-6 h-6 text-indigo-600" />
-                          </div>
-                          <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Book<br/>Specialist</span>
-                        </Card>
-                        <Card 
-                          onClick={() => setView('uploadReport')}
-                          className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group"
-                        >
-                          <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Upload className="w-6 h-6 text-teal-600" />
-                          </div>
-                          <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Upload<br/>Records</span>
-                        </Card>
                       </div>
                     </div>
-                  </div>
-                )}
-
-              {activeTab === 'reports' && (
-                <div className="space-y-10">
-                  <div className="space-y-6">
-                    <SectionTitle title="Medical Applications" />
-                    <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
-                      {['all', 'Pending', 'Assigned', 'In Progress'].map((filter) => (
-                        <button
-                          key={filter}
-                          onClick={() => setCaseFilter(filter)}
-                          className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
-                            caseFilter === filter 
-                            ? 'bg-primary border-primary text-white shadow-primary' 
-                            : 'bg-white text-content-muted border-slate-100 hover:border-slate-200'
-                          }`}
-                        >
-                          {filter}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    {mockCases
-                      .filter(c => caseFilter === 'all' || c.status === caseFilter)
-                      .map((item, idx) => (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        onClick={() => {
-                            setSelectedCase(item as any);
-                            setView('caseDetail');
-                        }}
-                      >
-                        <Card className="p-8 group hover:border-primary transition-all">
-                          <div className="flex justify-between items-start mb-8">
-                            <div className="space-y-1.5">
-                              <Badge variant="blue">{item.type}</Badge>
-                              <h4 className="text-xl font-black text-slate-900 tracking-tight leading-tight">{item.title}</h4>
-                            </div>
-                            <Badge variant={
-                              item.status === 'In Progress' ? 'blue' :
-                              item.status === 'Assigned' ? 'emerald' :
-                              'amber'
-                            }>
-                              {item.status}
-                            </Badge>
-                          </div>
-                          
-                          <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                                <User className="w-4 h-4 text-content-muted" />
-                              </div>
-                              <span className="text-[10px] font-black text-content-secondary uppercase tracking-widest">{item.doctor}</span>
-                            </div>
-                            <span className="text-[10px] font-black text-content-muted uppercase tracking-widest">{item.date}</span>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {mockCases.filter(c => caseFilter === 'all' || c.status === caseFilter).length === 0 && (
-                    <div className="py-32 text-center flex flex-col items-center gap-6">
-                      <div className="w-24 h-24 bg-white rounded-5xl shadow-soft flex items-center justify-center text-slate-200 border border-slate-50">
-                        <FileText className="w-10 h-10" />
-                      </div>
-                      <p className="text-xs font-black text-content-muted uppercase tracking-[0.2em]">No applications found</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'calendar' && (
-                <div className="py-32 text-center flex flex-col items-center gap-8">
-                  <div className="w-32 h-32 bg-white rounded-5xl shadow-strong flex items-center justify-center text-primary relative">
-                    <div className="absolute inset-0 rounded-5xl border-2 border-primary/20 animate-ping opacity-20" />
-                    <Calendar className="w-14 h-14" />
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Care Journey</h3>
-                    <p className="text-content-secondary max-w-xs mx-auto font-medium leading-relaxed">
-                      Your upcoming milestones and therapy sessions will appear here once your plan is activated.
-                    </p>
-                  </div>
-                  <Button variant="secondary" className="w-auto px-10 py-4 shadow-soft" onClick={() => setView('booking')}>
-                    Explore Slots
-                  </Button>
-                </div>
-              )}
-
-              {activeTab === 'profile' && (
-                <div className="space-y-12 pb-12">
-                  {/* User Profile Card */}
-                  <Card className="p-10 flex flex-col items-center text-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
-                    <div className="w-28 h-28 bg-slate-50 rounded-4xl flex items-center justify-center text-content-muted mb-6 border-4 border-white shadow-strong relative group">
-                      <User className="w-12 h-12 group-hover:scale-110 transition-transform" />
-                      <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl flex items-center justify-center border-4 border-white shadow-primary">
-                        <Settings className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Krishna Dhall</h3>
-                    <p className="text-content-muted text-[10px] font-black uppercase tracking-[0.2em] mb-8">Patient ID: #PAT-2024-X</p>
-                    
-                    <div className="grid grid-cols-3 gap-4 w-full py-8 border-y border-slate-50 mb-8">
-                      <div>
-                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Age</p>
-                        <p className="font-extrabold text-slate-900">28</p>
-                      </div>
-                      <div className="border-x border-slate-50">
-                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Weight</p>
-                        <p className="font-extrabold text-slate-900">72kg</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">Blood</p>
-                        <p className="font-extrabold text-red-500">O+</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3 w-full">
-                      <Button 
-                        variant="primary"
-                        onClick={() => setView('payment')}
-                        className="py-5 bg-slate-900 hover:bg-slate-800 border-none"
-                      >
-                        <ShieldCheck className="w-5 h-5 text-blue-400" />
-                        Upgrade to Premium
+                    <div className="flex gap-4">
+                      <Button variant="ghost" className="flex-1 py-4 border-slate-100" onClick={(e) => { e.stopPropagation(); }}>
+                        <Calendar className="w-4 h-4" />
+                        Schedule
                       </Button>
                       <Button 
-                        variant="ghost"
-                        onClick={() => setView('doctorDashboard')}
-                        className="py-5 bg-blue-50 text-primary hover:bg-blue-100"
+                        variant="primary"
+                        className="flex-1 py-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCase(mockCases[0]);
+                          setView('chat');
+                        }}
                       >
-                        <Stethoscope className="w-5 h-5" />
-                        Doctor Portal Access
+                         <MessageSquare className="w-4 h-4" />
+                         Chat now
                       </Button>
                     </div>
                   </Card>
+                </div>
 
-                  {/* Medical History Section */}
-                  <div className="space-y-6">
-                    <SectionTitle title="Vital Information" />
-                    <div className="space-y-3">
-                      {[
-                        { icon: Heart, label: 'Allergies', value: 'Peanuts, Penicillin', color: 'text-red-500', bg: 'bg-red-50' },
-                        { icon: Stethoscope, label: 'Medications', value: 'Ibuprofen (PRN)', color: 'text-blue-500', bg: 'bg-blue-50' },
-                        { icon: Info, label: 'History', value: 'Appendectomy (2018)', color: 'text-amber-500', bg: 'bg-amber-50' }
-                      ].map((item, i) => (
-                        <Card key={i} className="p-6 flex items-center gap-6 group hover:border-primary/20 transition-all">
-                          <div className={`w-14 h-14 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
-                            <item.icon className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-black text-content-muted uppercase tracking-widest mb-1">{item.label}</p>
-                            <p className="text-base font-black text-slate-900 tracking-tight">{item.value}</p>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Settings Menu */}
-                  <div className="space-y-6">
-                    <SectionTitle title="Account Settings" />
-                    <Card className="overflow-hidden p-0">
-                      {[
-                        { icon: Bell, label: 'Notifications', desc: 'Push, Email, SMS', action: () => setView('notifSettings') },
-                        { icon: ShieldCheck, label: 'Security & Privacy', desc: 'Biometric, Password', action: () => setView('securitySettings') },
-                        { icon: CreditCard, label: 'Billing History', desc: 'Manage payments', action: () => setView('billingHistory') },
-                        { icon: MessageCircle, label: 'Help & Support', desc: 'Contact care team', action: () => setView('helpSupport') },
-                        { icon: LogOut, label: 'Logout', desc: 'End current session', danger: true, action: () => setShowLogoutConfirm(true) }
-                      ].map((item, i, arr) => (
-                        <button 
-                          key={i} 
-                          onClick={item.action}
-                          className={`w-full p-6 flex items-center gap-5 hover:bg-slate-50 transition-colors text-left group ${i !== arr.length - 1 ? 'border-b border-slate-50' : ''}`}
-                        >
-                          <div className={`p-4 rounded-2xl ${item.danger ? 'bg-red-50 text-red-500 group-hover:bg-red-500 group-hover:text-white' : 'bg-slate-50 text-content-muted'} transition-all`}>
-                            <item.icon className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1">
-                            <p className={`font-black text-base tracking-tight ${item.danger ? 'text-red-500' : 'text-slate-900'}`}>{item.label}</p>
-                            <p className="text-[10px] text-content-muted font-black uppercase tracking-widest mt-0.5">{item.desc}</p>
-                          </div>
-                          <ChevronRight className={`w-5 h-5 ${item.danger ? 'text-red-300' : 'text-slate-200'} group-hover:translate-x-1 transition-transform`} />
-                        </button>
-                      ))}
+                <div className="space-y-6 pb-12">
+                  <SectionTitle title="Quick Actions" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Card 
+                      onClick={() => setView('booking')}
+                      className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group active:scale-95"
+                    >
+                      <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Calendar className="w-6 h-6 text-secondary" />
+                      </div>
+                      <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Book<br/>Specialist</span>
+                    </Card>
+                    <Card 
+                      onClick={() => setView('uploadReport')}
+                      className="p-8 flex flex-col gap-6 text-left hover:border-primary transition-all group active:scale-95"
+                    >
+                      <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Upload className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <span className="font-black text-slate-900 text-sm uppercase tracking-widest leading-relaxed">Upload<br/>Records</span>
                     </Card>
                   </div>
-
-                  <div className="text-center pt-8">
-                     <p className="text-[10px] text-slate-200 font-black uppercase tracking-[0.4em]">Nuplasm AI v2.4.0</p>
-                  </div>
                 </div>
-              )}
-            </Container>
-          </div>
-
-          {/* Floating Action Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setView('newCase')}
-            className="fixed bottom-32 right-8 w-20 h-20 bg-slate-900 text-white rounded-4xl shadow-strong flex items-center justify-center group z-30"
-          >
-            <Plus className="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 ease-out" />
-          </motion.button>
-
-          {/* Bottom Tab Bar */}
-          <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100 px-8 py-6 pb-10 flex justify-between items-center z-40 shadow-strong">
-            {[
-              { id: 'home', icon: Home, label: 'Home' },
-              { id: 'calendar', icon: Calendar, label: 'Care' },
-              { id: 'reports', icon: FileText, label: 'Docs' },
-              { id: 'profile', icon: User, label: 'Menu' },
-            ].map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className="flex flex-col items-center gap-2 group relative min-w-[64px]"
-                >
-                  <div className={`p-3 rounded-2xl transition-all duration-500 ease-out ${isActive ? 'bg-primary text-white shadow-primary scale-110' : 'text-content-muted hover:bg-slate-50'}`}>
-                    <tab.icon className="w-6 h-6 shrink-0" />
-                  </div>
-                  <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${isActive ? 'text-primary' : 'text-content-muted'}`}>
-                    {tab.label}
-                  </span>
-                  {isActive && (
-                    <motion.div 
-                       layoutId="tab-underline"
-                       className="absolute -bottom-2 w-1.5 h-1.5 bg-primary rounded-full"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
+              </Container>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <AnimatePresence>
@@ -2613,6 +2651,13 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+
+      {!['splash', 'onboarding', 'login', 'otp', 'videoCall'].includes(view) && (
+        <>
+          <BottomNav />
+          <FloatingActionButton />
+        </>
+      )}
 
       {/* Background Decorative Blurs */}
       <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">

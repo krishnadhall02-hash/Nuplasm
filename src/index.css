@@ -8,16 +8,22 @@
   --radius-4xl: 2.5rem;
   --radius-5xl: 3rem;
   
-  --color-primary: var(--color-blue-600);
-  --color-surface-bg: var(--color-slate-50);
-  --color-surface-card: #ffffff;
-  --color-content-primary: var(--color-slate-900);
-  --color-content-secondary: var(--color-slate-500);
-  --color-content-muted: var(--color-slate-400);
+  /* Nuplasm Brand Colors */
+  --color-primary: #0A3D91; /* Deep Blue */
+  --color-secondary: #1E6BFF; /* Light Blue */
+  --color-accent: #E53935; /* Nuplasm Red */
+  
+  --color-surface-bg: #F5F7FA;
+  --color-surface-card: #FFFFFF;
+  --color-surface-dark: #0B0B0B;
+  
+  --color-content-primary: #111111;
+  --color-content-secondary: #666666;
+  --color-content-muted: #94A3B8;
 
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --shadow-primary: 0 10px 40px rgba(37, 99, 235, 0.15);
+  --shadow-soft: 0 4px 20px rgba(10, 61, 145, 0.05);
+  --shadow-strong: 0 10px 30px rgba(10, 61, 145, 0.1);
+  --shadow-primary: 0 10px 40px rgba(10, 61, 145, 0.2);
 }
 
 @layer base {
